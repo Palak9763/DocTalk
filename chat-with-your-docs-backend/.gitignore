@@ -1,0 +1,15 @@
+# Environment files
+.env
+
+# Python cache & build
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Data and index stores
+index/
+data/library/
+
+# Virtual environment
+.venv/
