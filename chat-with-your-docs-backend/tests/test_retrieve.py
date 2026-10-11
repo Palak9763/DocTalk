@@ -4,10 +4,7 @@ import math
 from pathlib import Path
 import sys
 import tempfile
-
 import numpy as np
-
-# Ensure project root is in sys.path
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -24,8 +21,6 @@ from rag.retrieve import (
     tokenize,
 )
 from tests.fakes import install
-
-
 def test_inverted_index_bm25_math() -> None:
     """Verify BM25 math matches manual computation, IDF is non-negative, and filtering works."""
     # 3 docs:

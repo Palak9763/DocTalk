@@ -23,7 +23,7 @@ try:
 except ImportError:
     hnswlib = None
 
-from rag.config import ANN_MIN_CHUNKS
+from rag.config import ANN_MIN_CHUNKS, RERANK_MAX_LEN, RERANK_MODEL
 from rag.ingest import Chunk
 from rag.llm import embed
 
@@ -413,3 +413,95 @@ class Retriever:
             fused_total=fused_total,
             duplicates_removed=duplicates_removed,
         )
+
+
+class Reranker:
+    """Cross-encoder reranker with lazy loading and sigmoid score normalization."""
+
+    def __init__(
+        self,
+        model_name: str = RERANK_MODEL,
+        max_length: int = RERANK_MAX_LEN,
+    ) -> None:
+        self.model_name = model_name
+        self.max_length = max_length
+        self._model: Any = None
+        self._lock = threading.Lock()
+
+    @property
+    def loaded(self) -> bool:
+        """Indicate whether the underlying cross-encoder model is currently loaded in memory."""
+        return self._model is not None
+
+    def load(self) -> Any:
+        """Lazy, thread-safe initialization of CrossEncoder model."""
+        if self._model is None:
+            with self._lock:
+                if self._model is None:
+                    from sentence_transformers import CrossEncoder
+
+                    self._model = CrossEncoder(self.model_name, max_length=self.max_length)
+        return self._model
+
+    def score(
+        self,
+        query: str,
+        chunks: list[Chunk],
+        idxs: list[int],
+    ) -> list[float]:
+        """Score each (query, chunks[i].text) pair using the cross-encoder.
+
+        Returns:
+            Normalized scores in [0, 1]. Applies sigmoid if raw scores fall outside [0, 1].
+            Returns [] if idxs is empty.
+        """
+        if not idxs:
+            return []
+
+        model = self.load()
+        pairs = [[query, chunks[i].text] for i in idxs]
+        raw_scores = model.predict(pairs, batch_size=16, show_progress_bar=False)
+
+        scores_arr = np.asarray(raw_scores, dtype=float).ravel()
+        if len(scores_arr) == 0:
+            return []
+
+        # If any raw scores fall outside [0, 1] (logits), apply sigmoid
+        if np.any(scores_arr < 0.0) or np.any(scores_arr > 1.0):
+            scores_arr = np.where(
+                scores_arr >= 0,
+                1.0 / (1.0 + np.exp(-scores_arr)),
+                np.exp(scores_arr) / (1.0 + np.exp(scores_arr)),
+            )
+
+        return [float(s) for s in scores_arr]
+
+    def rerank_scored(
+        self,
+        query: str,
+        chunks: list[Chunk],
+        idxs: list[int],
+        top_k: int | None = None,
+    ) -> list[tuple[int, float]]:
+        """Rerank chunk indices with scores, returned sorted descending by score."""
+        if not idxs:
+            return []
+
+        scores = self.score(query, chunks, idxs)
+        scored = list(zip(idxs, scores))
+        scored.sort(key=lambda item: (-item[1], item[0]))
+        if top_k is not None:
+            scored = scored[:top_k]
+        return scored
+
+    def rerank(
+        self,
+        query: str,
+        chunks: list[Chunk],
+        idxs: list[int],
+        top_k: int | None = None,
+    ) -> list[int]:
+        """Rerank chunk indices, returning only indices sorted descending by score."""
+        scored = self.rerank_scored(query, chunks, idxs, top_k=top_k)
+        return [idx for idx, _ in scored]
+
