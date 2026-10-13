@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Chat with your documents using AI. Upload PDFs, DOCX, Markdown or text files and ask questions powered by local LLMs via Ollama." />
+  <title>Chat With Your Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="config.js"></script>
+</head>
+<body>
+  <div id="app-shell">
+
+    <!-- ── Error Banner ──────────────────────────────────────────────────── -->
+    <div id="error-banner" role="alert" aria-live="assertive">
+      <span aria-hidden="true">⚠️</span>
+      <span id="error-banner-text"></span>
+      <button id="retry-btn" type="button">Retry</button>
+    </div>
+
+    <!-- ── Top Bar ───────────────────────────────────────────────────────── -->
+    <header id="top-bar" role="banner">
+      <div id="logo-group">
+        <div id="logo-icon" aria-hidden="true">💬</div>
+        <h1 id="app-title">Chat With Your Docs</h1>
+      </div>
+      <div id="model-chips" role="list" aria-label="Active models"></div>
+    </header>
+
+    <!-- ── Mobile Tabs ───────────────────────────────────────────────────── -->
+    <nav id="tab-bar" role="tablist" aria-label="Panel navigation">
+      <button class="tab-btn active" role="tab" aria-selected="true"
+              aria-controls="panel-files"   id="tab-files"   data-panel="panel-files">📁 Files</button>
+      <button class="tab-btn"        role="tab" aria-selected="false"
+              aria-controls="panel-chat"    id="tab-chat"    data-panel="panel-chat">💬 Chat</button>
+      <button class="tab-btn"        role="tab" aria-selected="false"
+              aria-controls="panel-sources" id="tab-sources" data-panel="panel-sources">🔍 Trace</button>
+    </nav>
+
+    <!-- ── Main Area ─────────────────────────────────────────────────────── -->
+    <main id="main-area" role="main">
+
+      <!-- LEFT: Files Panel ─────────────────────────────────────────────── -->
+      <section id="panel-files" class="panel tab-active" role="tabpanel"
+               aria-labelledby="tab-files">
+        <div class="panel-header">
+          <span class="panel-title">Files</span>
+          <div class="dropdown-wrapper">
+            <button class="icon-btn" id="files-menu-btn" type="button"
+                    aria-label="Files menu" aria-haspopup="true" aria-expanded="false">
+              ···
+            </button>
+            <div class="dropdown-menu" id="files-dropdown" role="menu">
+              <button class="dropdown-item" id="load-samples-btn" role="menuitem" type="button">
+                📄 Load sample notes
+              </button>
+              <button class="dropdown-item danger" id="remove-all-btn" role="menuitem" type="button">
+                🗑️ Remove all files
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confirm strip -->
+        <div id="confirm-strip" role="alert">
+          <span>Remove <strong>all</strong> documents? This cannot be undone.</span>
+          <div class="confirm-actions">
+            <button class="btn-sm" id="confirm-cancel-btn" type="button">Cancel</button>
+            <button class="btn-sm danger" id="confirm-ok-btn" type="button">Remove All</button>
+          </div>
+        </div>
+
+        <div class="panel-body" id="files-panel-body">
+          <!-- Uploaded Docs section -->
+          <button class="section-toggle" id="docs-toggle" type="button"
+                  aria-expanded="true" aria-controls="docs-body">
+            <span>📂</span>
+            <span>Uploaded Documents</span>
+            <span class="caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="section-body" id="docs-body">
+            <div id="file-list" role="list" aria-label="Uploaded files"></div>
+            <div id="no-docs-yet" style="padding:14px 16px;font-size:12px;color:var(--text-muted);">
+              No files uploaded yet.
+            </div>
+          </div>
+
+          <!-- Drop zone -->
+          <div id="drop-zone" role="button" tabindex="0"
+               aria-label="Upload files. Drag and drop, or press Enter to open file picker.">
+            <span id="drop-zone-icon" aria-hidden="true">⬆️</span>
+            <p id="drop-zone-title">Drag &amp; Drop or Click to Upload</p>
+            <p id="drop-zone-sub">PDF, DOCX, MD, TXT &middot; up to 50 MB</p>
+            <input type="file" id="file-input" multiple
+                   accept=".pdf,.docx,.md,.txt"
+                   aria-label="Select files to upload" />
+          </div>
+        </div>
+      </section>
+
+      <!-- CENTRE: Chat Panel ────────────────────────────────────────────── -->
+      <section id="panel-chat" class="panel" role="tabpanel"
+               aria-labelledby="tab-chat">
+
+        <!-- Mode switch -->
+        <div id="mode-bar">
+          <div id="mode-switch" role="group" aria-label="Retrieval mode">
+            <button class="mode-btn" id="mode-fast" data-mode="fast" type="button"
+                    title="Fast: ~2 model calls, no reranker">Fast</button>
+            <button class="mode-btn active" id="mode-balanced" data-mode="balanced" type="button"
+                    title="Balanced: ~3 model calls with reranker">Balanced</button>
+            <button class="mode-btn" id="mode-thorough" data-mode="thorough" type="button"
+                    title="Thorough: ~9 model calls with LLM grading and verification">Thorough</button>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="message-list" role="log" aria-live="polite" aria-label="Conversation">
+          <!-- Welcome card shown initially -->
+          <div id="welcome-card">
+            <div class="welcome-logo" aria-hidden="true">💬</div>
+            <h2 class="welcome-title">Chat With Your Docs</h2>
+            <p class="welcome-sub">Upload your documents and ask questions. Your data stays local.</p>
+            <div class="example-questions" id="example-questions" role="list">
+              <button class="example-q" role="listitem" type="button">
+                📝 What are the main topics covered in my documents?
+              </button>
+              <button class="example-q" role="listitem" type="button">
+                🔍 Summarize the key concepts and findings.
+              </button>
+              <button class="example-q" role="listitem" type="button">
+                💡 What recommendations or conclusions are made?
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Composer -->
+        <div id="composer-area">
+          <div id="composer">
+            <textarea id="chat-input" rows="1"
+                      placeholder="Ask a question about your documents…"
+                      aria-label="Chat message input"
+                      aria-multiline="true"></textarea>
+            <button class="composer-btn" id="stop-btn" type="button" aria-label="Stop generating">
+              ⏹
+            </button>
+            <button class="composer-btn" id="send-btn" type="button" aria-label="Send message">
+              ➤
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: Sources & Trace Panel ────────────────────────────────── -->
+      <section id="panel-sources" class="panel" role="tabpanel"
+               aria-labelledby="tab-sources">
+        <div class="panel-header">
+          <span class="panel-title">Sources &amp; Trace</span>
+        </div>
+        <div class="panel-body" id="sources-panel-body">
+          <div id="sources-empty">
+            <span id="sources-empty-icon" aria-hidden="true">🔍</span>
+            <p>Ask a question to see sources and the reasoning trace here.</p>
+          </div>
+        </div>
+      </section>
+
+    </main><!-- /#main-area -->
+  </div><!-- /#app-shell -->
+
+  <!-- Toast container -->
+  <div id="toast-container" aria-live="polite" aria-label="Notifications"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
