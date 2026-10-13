@@ -1,5 +1,4 @@
 """Unit tests for rag/retrieve.py: InvertedIndex, DenseIndex, RRF, and Retriever."""
-
 import math
 from pathlib import Path
 import sys
