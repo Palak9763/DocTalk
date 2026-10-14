@@ -1329,6 +1329,31 @@
         activateMobileTab(btn.dataset.panel);
       });
     });
+
+    // ── Theme toggle (Light/White by default) ──
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    if (themeBtn) {
+      const savedTheme = localStorage.getItem('chat_theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeBtn.textContent = '☀️';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        themeBtn.textContent = '🌙';
+      }
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+          document.documentElement.removeAttribute('data-theme');
+          themeBtn.textContent = '🌙';
+          localStorage.setItem('chat_theme', 'light');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          themeBtn.textContent = '☀️';
+          localStorage.setItem('chat_theme', 'dark');
+        }
+      });
+    }
   }
 
   /* ══════════════════════════════════════════════════════════════════════════

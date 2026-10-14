@@ -1,0 +1,252 @@
+[
+  {
+    "id": "q01",
+    "question": "Under what Gauss-Markov assumptions does Ordinary Least Squares produce the Best Linear Unbiased Estimator (BLUE)?",
+    "history": [],
+    "gold": [
+      ["01_regression.md", "Linear Regression and Ordinary Least Squares"]
+    ],
+    "reference": "OLS produces the Best Linear Unbiased Estimator (BLUE) under the Gauss-Markov assumptions: linearity, homoscedasticity, no multicollinearity, and zero error expectation.",
+    "type": "factual",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q02",
+    "question": "Why does scaled dot-product self-attention divide the query-key dot products by the square root of key projection dimension d_k?",
+    "history": [],
+    "gold": [
+      ["03_transformers.md", "Scaled Dot-Product Self-Attention"]
+    ],
+    "reference": "Dividing by the square root of the key projection dimension d_k counteracts dot products growing excessively large for high dimensions, which would otherwise push the softmax operator into regions with infinitesimal gradient slopes.",
+    "type": "factual",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q03",
+    "question": "What is the primary operational advantage of reverse-mode automatic differentiation in backpropagation?",
+    "history": [],
+    "gold": [
+      ["02_neural_networks.md", "Backpropagation and the Computational Graph"]
+    ],
+    "reference": "Reverse-mode automatic differentiation reduces computational complexity from exponential to linear with respect to node count.",
+    "type": "factual",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q04",
+    "question": "How do penalty coefficients in the cost function keep statistical models from memorizing empirical training noise?",
+    "history": [],
+    "gold": [
+      ["01_regression.md", "Regularization Strategies: Ridge, Lasso, and ElasticNet"]
+    ],
+    "reference": "Regularization penalizes model complexity in the loss objective (such as L1 or L2 penalties) to prevent models from memorizing noise and reduce generalization variance.",
+    "type": "vocabulary_gap",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q05",
+    "question": "Why do certain threshold transfer units permanently cease updating during deep network optimization?",
+    "history": [],
+    "gold": [
+      ["02_neural_networks.md", "Activation Functions and the Dying ReLU Problem"]
+    ],
+    "reference": "In the dying ReLU problem, large negative gradient updates push a neuron's pre-activation into negative territory for all inputs, causing the local gradient to become permanently zero so the neuron halts updating.",
+    "type": "vocabulary_gap",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q06",
+    "question": "How does injecting periodic wave frequencies preserve token ordering information across parallel sequence models?",
+    "history": [],
+    "gold": [
+      ["03_transformers.md", "Positional Encoding Formulations"]
+    ],
+    "reference": "Sinusoidal positional encodings interweave deterministic sine and cosine functions of varying frequencies across dimension channels, enabling linear transformations to extrapolate relative distance offsets.",
+    "type": "vocabulary_gap",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q07",
+    "question": "What is the analytical normal equation formula w = (X^T X)^(-1) X^T y in OLS?",
+    "history": [],
+    "gold": [
+      ["01_regression.md", "Linear Regression and Ordinary Least Squares"]
+    ],
+    "reference": "The closed-form analytical solution is obtained via the normal equation w = (X^T X)^(-1) X^T y when X^T X is non-singular.",
+    "type": "exact_term",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q08",
+    "question": "What exact variance formula Var(W) = 2 / (n_in + n_out) is used in Xavier Glorot initialization?",
+    "history": [],
+    "gold": [
+      ["02_neural_networks.md", "Vanishing Gradients and Xavier/Glorot Initialization"]
+    ],
+    "reference": "Xavier (Glorot) initialization draws initial weights from a distribution with variance Var(W) = 2 / (n_in + n_out), matching input and output variance under linear or symmetric activations.",
+    "type": "exact_term",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q09",
+    "question": "What formula defines RRF_Score(d) using rank smoothing parameter k in Reciprocal Rank Fusion?",
+    "history": [],
+    "gold": [
+      ["04_rag.md", "Hybrid Retrieval and Reciprocal Rank Fusion"]
+    ],
+    "reference": "Candidate lists are unified via Reciprocal Rank Fusion: RRF_Score(d) = sum_{m in models} [ 1 / (k + rank_m(d)) ], where smoothing parameter k is typically 60.",
+    "type": "exact_term",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q10",
+    "question": "How does it reduce computational complexity compared to naive forward calculations?",
+    "history": [
+      {
+        "role": "user",
+        "content": "What is backpropagation in deep neural networks?"
+      },
+      {
+        "role": "assistant",
+        "content": "Backpropagation applies the calculus chain rule recursively backward from scalar loss outputs to intermediate weight tensors."
+      }
+    ],
+    "gold": [
+      ["02_neural_networks.md", "Backpropagation and the Computational Graph"]
+    ],
+    "reference": "Reverse-mode automatic differentiation reduces computational complexity from exponential to linear with respect to node count.",
+    "type": "follow_up",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q11",
+    "question": "How does it differ from Lasso in setting non-informative feature weights strictly to zero?",
+    "history": [
+      {
+        "role": "user",
+        "content": "Can you explain Ridge L2 regularization?"
+      },
+      {
+        "role": "assistant",
+        "content": "Ridge regularization adds the squared Euclidean norm of weights to shrink coefficients uniformly toward zero."
+      }
+    ],
+    "gold": [
+      ["01_regression.md", "Regularization Strategies: Ridge, Lasso, and ElasticNet"]
+    ],
+    "reference": "Ridge shrinks coefficient magnitudes uniformly toward zero without setting them strictly to zero, whereas Lasso drives non-informative feature weights strictly to zero, performing intrinsic feature selection.",
+    "type": "follow_up",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q12",
+    "question": "Why do they fail to capture exact lexical keywords and subtle syntactic conditions?",
+    "history": [
+      {
+        "role": "user",
+        "content": "What are bi-encoders in retrieval-augmented generation?"
+      },
+      {
+        "role": "assistant",
+        "content": "Bi-encoders encode documents and queries into independent fixed-dimension dense vectors precomputed offline."
+      }
+    ],
+    "gold": [
+      ["04_rag.md", "Document Ingestion, Sectional Chunking, and Bi-Encoders"]
+    ],
+    "reference": "Because query and document tokens never interact directly during embedding generation, bi-encoders occasionally miss exact lexical keywords and subtle syntactic conditions.",
+    "type": "follow_up",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q13",
+    "question": "How does hybrid retrieval unify bi-encoder dense vectors with sparse inverted indices using Reciprocal Rank Fusion?",
+    "history": [],
+    "gold": [
+      ["04_rag.md", "Document Ingestion, Sectional Chunking, and Bi-Encoders"],
+      ["04_rag.md", "Hybrid Retrieval and Reciprocal Rank Fusion"]
+    ]
+  ,
+    "reference": "Bi-encoders encode documents and queries into independent dense vectors, while BM25 handles sparse lexical matches; Reciprocal Rank Fusion (RRF) harmonizes candidates from both incompatible distributions into a unified top-50 pool.",
+    "type": "multi_hop",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q14",
+    "question": "Compare vanishing gradient mitigation via Xavier initialization in deep networks with softmax scale stabilization via sqrt(d_k) in Transformers.",
+    "history": [],
+    "gold": [
+      ["02_neural_networks.md", "Vanishing Gradients and Xavier/Glorot Initialization"],
+      ["03_transformers.md", "Scaled Dot-Product Self-Attention"]
+    ],
+    "reference": "Xavier initialization stabilizes signal variance to match input and output variance preventing vanishing gradient collapse in deep networks, while dividing by sqrt(d_k) in self-attention counteracts large dot products that push softmax into vanishing gradient regions.",
+    "type": "multi_hop",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q15",
+    "question": "How does ElasticNet combine L1 and L2 penalties, and when is standard OLS without penalties ill-conditioned?",
+    "history": [],
+    "gold": [
+      ["01_regression.md", "Linear Regression and Ordinary Least Squares"],
+      ["01_regression.md", "Regularization Strategies: Ridge, Lasso, and ElasticNet"]
+    ],
+    "reference": "OLS becomes singular or ill-conditioned when features outnumber samples or feature correlation is high; ElasticNet combines L1 (Lasso) sparsity with L2 (Ridge) grouping using a convex mixture parameter alpha to stabilize matrix inversion.",
+    "type": "multi_hop",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q16",
+    "question": "Hello! What kind of questions can you answer about these lecture notes?",
+    "history": [],
+    "gold": [],
+    "reference": "",
+    "type": "no_retrieval",
+    "needs_retrieval": false
+  },
+  {
+    "id": "q17",
+    "question": "Thank you for explaining that so clearly, I appreciate your help!",
+    "history": [],
+    "gold": [],
+    "reference": "",
+    "type": "no_retrieval",
+    "needs_retrieval": false
+  },
+  {
+    "id": "q18",
+    "question": "Good afternoon! Could you say hi and let me know if you are ready?",
+    "history": [],
+    "gold": [],
+    "reference": "",
+    "type": "no_retrieval",
+    "needs_retrieval": false
+  },
+  {
+    "id": "q19",
+    "question": "How does the dual Lagrangian formulation derive the margin boundaries for soft-margin Support Vector Machines (SVM)?",
+    "history": [],
+    "gold": [],
+    "reference": "",
+    "type": "unanswerable",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q20",
+    "question": "What are the quantum gate circuit requirements for executing Shor's prime factorization algorithm?",
+    "history": [],
+    "gold": [],
+    "reference": "",
+    "type": "unanswerable",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q21",
+    "question": "How does the PageRank random walk model handle dead ends and spider traps in web graphs?",
+    "history": [],
+    "gold": [],
+    "reference": "",
+    "type": "unanswerable",
+    "needs_retrieval": true
+  }
+]

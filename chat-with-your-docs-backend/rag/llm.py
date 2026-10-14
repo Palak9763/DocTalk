@@ -133,10 +133,17 @@ def parse_json(text: str) -> dict:
 
 
 def chat_json(
-    messages: list[dict[str, str]], max_tokens: int | None = None
+    messages: list[dict[str, str]],
+    max_tokens: int | None = None,
+    model: str | None = None,
 ) -> dict:
     """Call chat at temperature 0 and parse the resulting JSON object."""
-    response = chat(messages=messages, temperature=0.0, max_tokens=max_tokens)
+    response = chat(
+        messages=messages,
+        temperature=0.0,
+        max_tokens=max_tokens,
+        model=model,
+    )
     return parse_json(response)
 
 

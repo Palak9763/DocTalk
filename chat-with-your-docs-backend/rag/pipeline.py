@@ -116,15 +116,17 @@ class RAGPipeline:
     def retrieve(
         self,
         question: str,
-        history: list[Any] | None,
-        trace: dict[str, Any],
-        emit: Callable[[str, dict], None] | None,
+        history: list[Any] | None = None,
+        trace: dict[str, Any] | None = None,
+        emit: Callable[[str, dict], None] | None = None,
     ) -> tuple[list[int], dict[str, Any]]:
         """Run stages B (rewrite/expand/HyDE), C (search), D (rerank).
 
         Returns (candidate_indices, updated_trace).
         """
         cfg = self.cfg
+        if trace is None:
+            trace = {}
         timings: dict[str, int] = trace.setdefault("timings_ms", {})
 
         # ── Stage B: Query rewriting ──
