@@ -1,0 +1,319 @@
+{
+  "metadata": {
+    "mode": "retrieval",
+    "timestamp": "20261017_000546",
+    "docs_path": "D:\\DocTalk\\chat-with-your-docs-backend\\data\\notes",
+    "dataset_path": "C:\\Users\\palak\\AppData\\Local\\Temp\\pytest-of-palak\\pytest-21\\test_run_eval_retrieval_mode_o0\\test_dataset.json",
+    "chunks_count": 16,
+    "questions_count": 3,
+    "chat_model": "qwen2.5:3b-instruct",
+    "embed_model": "nomic-embed-text",
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "judge_model": "qwen2.5:3b-instruct",
+    "judge_stats": {
+      "calls": 0,
+      "skips": 0
+    }
+  },
+  "config_summaries": {
+    "sparse": {
+      "count": 1,
+      "skipped": 2,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr": 1.0,
+      "ndcg@5": 1.0
+    },
+    "dense": {
+      "count": 1,
+      "skipped": 2,
+      "needs_retrieval": 1.0,
+      "hit@5": 0.0,
+      "recall@5": 0.0,
+      "precision@5": 0.0,
+      "mrr": 0.0,
+      "ndcg@5": 0.0
+    },
+    "hybrid": {
+      "count": 1,
+      "skipped": 2,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr": 1.0,
+      "ndcg@5": 1.0
+    },
+    "hybrid_rerank": {
+      "count": 1,
+      "skipped": 2,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr": 1.0,
+      "ndcg@5": 1.0
+    }
+  },
+  "type_summaries": {
+    "sparse": {
+      "factual": {
+        "count": 1,
+        "skipped": 1,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 1
+      }
+    },
+    "dense": {
+      "factual": {
+        "count": 1,
+        "skipped": 1,
+        "needs_retrieval": 1.0,
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 1
+      }
+    },
+    "hybrid": {
+      "factual": {
+        "count": 1,
+        "skipped": 1,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 1
+      }
+    },
+    "hybrid_rerank": {
+      "factual": {
+        "count": 1,
+        "skipped": 1,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 1
+      }
+    }
+  },
+  "raw_results": {
+    "sparse": [
+      {
+        "id": "t1",
+        "type": "factual",
+        "question": "What is backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t2",
+        "type": "no_retrieval",
+        "question": "Hello there!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "t3_broken",
+        "type": "factual",
+        "question": null,
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "error": "'NoneType' object has no attribute 'strip'",
+        "_skip": true
+      }
+    ],
+    "dense": [
+      {
+        "id": "t1",
+        "type": "factual",
+        "question": "What is backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#0.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#1.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0"
+        ],
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      {
+        "id": "t2",
+        "type": "no_retrieval",
+        "question": "Hello there!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#1.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "t3_broken",
+        "type": "factual",
+        "question": null,
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "error": "'NoneType' object has no attribute 'strip'",
+        "_skip": true
+      }
+    ],
+    "hybrid": [
+      {
+        "id": "t1",
+        "type": "factual",
+        "question": "What is backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "04_rag.md#0.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t2",
+        "type": "no_retrieval",
+        "question": "Hello there!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#1.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "t3_broken",
+        "type": "factual",
+        "question": null,
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "error": "'NoneType' object has no attribute 'strip'",
+        "_skip": true
+      }
+    ],
+    "hybrid_rerank": [
+      {
+        "id": "t1",
+        "type": "factual",
+        "question": "What is backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t2",
+        "type": "no_retrieval",
+        "question": "Hello there!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "01_regression.md#0.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "t3_broken",
+        "type": "factual",
+        "question": null,
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "error": "'NoneType' object has no attribute 'strip'",
+        "_skip": true
+      }
+    ]
+  }
+}

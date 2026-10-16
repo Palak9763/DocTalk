@@ -23,11 +23,12 @@ from pathlib import Path
 from typing import Any, AsyncGenerator, Literal
 
 import uvicorn
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, field_validator
 
+import auth
 from rag import config, llm
 from rag.config import PRESETS, PipelineConfig
 from rag.ingest import SUPPORTED, Chunk, load_document
@@ -280,6 +281,7 @@ class ChatRequest(BaseModel):
 @asynccontextmanager
 async def _lifespan(app: FastAPI):  # type: ignore[type-arg]
     """Scan library dir, try to build the pipeline, and warm up models."""
+    auth.init_auth_db()
     store.scan()
     store.try_build()
 
@@ -381,9 +383,68 @@ def api_state() -> dict[str, Any]:
     return _state_dict()
 
 
+# ---------------------------------------------------------------------------
+# Auth routes
+# ---------------------------------------------------------------------------
+
+@app.post("/api/auth/login", summary="Log in with email and password")
+def api_login(req: auth.LoginRequest) -> dict[str, Any]:
+    user = auth.authenticate_user(req.email, req.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password.",
+        )
+    token = auth.create_token(user["id"], user["email"], user["role"])
+    return {"token": token, "user": user}
+
+
+@app.post("/api/auth/register", summary="Register a new student account")
+def api_register(req: auth.RegisterRequest) -> dict[str, Any]:
+    conn = auth._get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM users WHERE email = ?", (req.email.strip().lower(),))
+    if cur.fetchone():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="An account with this email already exists.",
+        )
+    user = auth.create_user(req.name, req.email, req.password, req.role)
+    token = auth.create_token(user["id"], user["email"], user["role"])
+    return {"token": token, "user": user}
+
+
+@app.get("/api/auth/me", summary="Get profile of current authenticated user")
+async def api_me(user: dict[str, Any] = Depends(auth.get_current_user)) -> dict[str, Any]:
+    return {"user": user}
+
+
+@app.get("/api/auth/demo-users", summary="Get demo user credentials for instant login")
+def api_demo_users() -> dict[str, Any]:
+    return {
+        "users": [
+            {
+                "name": "Prof. Sarah (Admin)",
+                "email": "admin@doctalk.com",
+                "password": "admin123",
+                "role": "admin",
+                "description": "Full access to upload, remove documents, and view deep RAG traces.",
+            },
+            {
+                "name": "Alex Student",
+                "email": "student@doctalk.com",
+                "password": "student123",
+                "role": "student",
+                "description": "Distraction-free study portal: ask questions with clean source citations.",
+            },
+        ]
+    }
+
+
 @app.post("/api/upload", summary="Upload one or more documents")
 async def api_upload(
     files: list[UploadFile] = File(...),
+    _admin: dict[str, Any] = Depends(auth.require_admin),
 ) -> dict[str, Any]:
     """Accept .pdf .docx .md .txt files (max 50 MB each).
 
@@ -462,7 +523,10 @@ async def api_upload(
 
 
 @app.delete("/api/files/{name}", summary="Delete a single uploaded file")
-def api_delete_file(name: str) -> dict[str, Any]:
+def api_delete_file(
+    name: str,
+    _admin: dict[str, Any] = Depends(auth.require_admin),
+) -> dict[str, Any]:
     """Remove one file by name. Returns 404 for unknown names or path tricks."""
     # Reject any path tricks
     known_names = {f["name"] for f in store.file_infos()}
@@ -474,7 +538,9 @@ def api_delete_file(name: str) -> dict[str, Any]:
 
 
 @app.delete("/api/files", summary="Delete all uploaded files")
-def api_delete_all() -> dict[str, Any]:
+def api_delete_all(
+    _admin: dict[str, Any] = Depends(auth.require_admin),
+) -> dict[str, Any]:
     """Remove every uploaded file and reset the pipeline."""
     store.clear()
     store.try_build()
@@ -482,7 +548,9 @@ def api_delete_all() -> dict[str, Any]:
 
 
 @app.post("/api/samples", summary="Load built-in sample lecture notes")
-def api_samples() -> dict[str, Any]:
+def api_samples(
+    _admin: dict[str, Any] = Depends(auth.require_admin),
+) -> dict[str, Any]:
     """Copy data/notes/*.md into the library and index them."""
     notes_dir = Path(config.NOTES_DIR)
     if not notes_dir.is_dir():

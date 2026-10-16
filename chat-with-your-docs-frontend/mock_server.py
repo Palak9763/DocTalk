@@ -103,6 +103,34 @@ class MockHandler(BaseHTTPRequestHandler):
         path = urllib.parse.urlparse(self.path).path
         if path == "/api/state":
             self._send_json(200, _make_state())
+        elif path == "/api/auth/demo-users":
+            self._send_json(200, {
+                "users": [
+                    {
+                        "name": "Prof. Sarah (Admin)",
+                        "email": "admin@doctalk.com",
+                        "password": "admin123",
+                        "role": "admin",
+                        "description": "Full access to upload, remove documents, and view deep RAG traces.",
+                    },
+                    {
+                        "name": "Alex Student",
+                        "email": "student@doctalk.com",
+                        "password": "student123",
+                        "role": "student",
+                        "description": "Distraction-free study portal: ask questions with clean source citations.",
+                    },
+                ]
+            })
+        elif path == "/api/auth/me":
+            self._send_json(200, {
+                "user": {
+                    "id": "mock_admin_1",
+                    "name": "Prof. Sarah (Admin)",
+                    "email": "admin@doctalk.com",
+                    "role": "admin"
+                }
+            })
         else:
             self._send_json(404, {"detail": "Not found"})
 
@@ -110,7 +138,29 @@ class MockHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         path = urllib.parse.urlparse(self.path).path
 
-        if path == "/api/samples":
+        if path == "/api/auth/login":
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length)) if length else {}
+            email = body.get("email", "").lower()
+            role = "student" if "student" in email else "admin"
+            name = "Alex Student" if role == "student" else "Prof. Sarah (Admin)"
+            self._send_json(200, {
+                "token": f"mock_token_{role}_{int(time.time())}",
+                "user": {"id": f"mock_{role}", "name": name, "email": email or f"{role}@doctalk.com", "role": role}
+            })
+
+        elif path == "/api/auth/register":
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length)) if length else {}
+            role = body.get("role", "student")
+            name = body.get("name", "New User")
+            email = body.get("email", "user@doctalk.com")
+            self._send_json(200, {
+                "token": f"mock_token_{role}_{int(time.time())}",
+                "user": {"id": f"mock_{role}", "name": name, "email": email, "role": role}
+            })
+
+        elif path == "/api/samples":
             with _lock:
                 _files["lecture_notes.md"] = {
                     "name": "lecture_notes.md", "size": 4096,

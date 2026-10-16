@@ -29,7 +29,32 @@
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
         <div id="model-chips" role="list" aria-label="Active models"></div>
-        <button id="theme-toggle-btn" class="icon-btn" type="button" aria-label="Toggle theme" title="Toggle dark/light mode" style="margin-left: 4px; font-size: 14px;">🌙</button>
+        <div id="portal-badge" class="portal-badge" title="Current Active Portal">🎓 Student Portal</div>
+        <div class="user-menu-wrapper" style="position: relative;">
+          <button id="user-btn" class="user-profile-btn" type="button" aria-label="User Profile" aria-haspopup="true" aria-expanded="false">
+            <span id="user-avatar" class="user-avatar-circle">🎓</span>
+            <span id="user-name" class="user-display-name">Alex Student</span>
+            <span class="user-caret">▾</span>
+          </button>
+          <div id="user-dropdown" class="dropdown-menu user-dropdown-box" role="menu">
+            <div class="user-dropdown-header">
+              <strong id="dropdown-user-name">Alex Student</strong>
+              <small id="dropdown-user-email">student@doctalk.com</small>
+              <div id="dropdown-user-role-pill" class="role-pill student">Student</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" id="switch-portal-btn" role="menuitem" type="button">
+              🔄 Switch to Admin Studio
+            </button>
+            <button class="dropdown-item" id="open-login-btn" role="menuitem" type="button">
+              🔑 Switch User / Sign In
+            </button>
+            <button class="dropdown-item danger" id="logout-btn" role="menuitem" type="button">
+              🚪 Sign Out
+            </button>
+          </div>
+        </div>
+        <button id="theme-toggle-btn" class="icon-btn" type="button" aria-label="Toggle theme" title="Toggle dark/light mode" style="margin-left: 2px; font-size: 14px;">🌙</button>
       </div>
     </header>
 
@@ -174,6 +199,112 @@
 
     </main><!-- /#main-area -->
   </div><!-- /#app-shell -->
+
+  <!-- ── Authentication Modal ─────────────────────────────────────────── -->
+  <div id="auth-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <div class="modal-card auth-card">
+      <button type="button" class="modal-close-btn" id="auth-close-btn" aria-label="Close modal">✕</button>
+
+      <div class="auth-header">
+        <div class="welcome-logo" style="width:46px; height:46px; font-size:22px; margin:0 auto 12px; display:flex; align-items:center; justify-content:center; border-radius:12px; background:linear-gradient(135deg, var(--accent), #a855f7);">💬</div>
+        <h2 id="auth-title" class="auth-title">DocTalk Access Portal</h2>
+        <p class="auth-subtitle">Select a demo portal or sign in to continue</p>
+      </div>
+
+      <!-- Quick 1-Click Demo Portals -->
+      <div class="demo-login-box">
+        <span class="demo-box-label">⚡ QUICK DEMO ACCESS</span>
+        <div class="demo-btn-grid">
+          <button type="button" class="demo-role-btn demo-student" id="demo-student-btn">
+            <span class="demo-icon">🎓</span>
+            <div class="demo-info">
+              <strong>Student Portal</strong>
+              <small>Clean study view &amp; clickable source citations</small>
+            </div>
+            <span class="demo-arrow">→</span>
+          </button>
+          <button type="button" class="demo-role-btn demo-admin" id="demo-admin-btn">
+            <span class="demo-icon">🛡️</span>
+            <div class="demo-info">
+              <strong>Admin Studio</strong>
+              <small>File management &amp; deep RAG trace inspection</small>
+            </div>
+            <span class="demo-arrow">→</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="auth-divider"><span>or sign in with email</span></div>
+
+      <!-- Auth Tabs -->
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tab active" id="tab-login" data-tab="login">Sign In</button>
+        <button type="button" class="auth-tab" id="tab-register" data-tab="register">Create Account</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" required placeholder="student@doctalk.com" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <div id="login-error" class="auth-error-msg hidden"></div>
+        <button type="submit" class="auth-submit-btn" id="login-submit-btn">Sign In to Portal</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form hidden">
+        <div class="form-group">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" required placeholder="e.g. Alex Student" autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" required placeholder="alex@university.edu" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" required minlength="4" placeholder="At least 4 characters" autocomplete="new-password" />
+        </div>
+        <div class="form-group">
+          <label for="reg-role">Account Type</label>
+          <select id="reg-role" class="form-select">
+            <option value="student">Student (Read notes, ask questions, citations)</option>
+            <option value="admin">Admin / Instructor (Upload docs, trace pipeline)</option>
+          </select>
+        </div>
+        <div id="register-error" class="auth-error-msg hidden"></div>
+        <button type="submit" class="auth-submit-btn" id="reg-submit-btn">Create &amp; Enter Portal</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Student Clean Citation Modal ────────────────────────────────────── -->
+  <div id="citation-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="citation-title">
+    <div class="modal-card citation-card">
+      <div class="citation-header">
+        <div class="citation-header-left">
+          <span class="citation-badge-pill" id="citation-badge-num">[1]</span>
+          <div>
+            <h3 id="citation-title" class="citation-title">Verified Source Excerpt</h3>
+            <span id="citation-source-doc" class="citation-doc-name">📄 document.pdf</span>
+          </div>
+        </div>
+        <button type="button" class="icon-btn" id="citation-close-btn" aria-label="Close citation preview">✕</button>
+      </div>
+      <div class="citation-excerpt-box">
+        <div id="citation-text" class="citation-text">...</div>
+      </div>
+      <div class="citation-footer">
+        <span id="citation-source-page" class="citation-page-tag">Page 1</span>
+        <button type="button" class="btn-sm" id="citation-done-btn">Close</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Toast container -->
   <div id="toast-container" aria-live="polite" aria-label="Notifications"></div>

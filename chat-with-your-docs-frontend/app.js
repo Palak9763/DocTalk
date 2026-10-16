@@ -21,6 +21,11 @@
     models: {},
     hasSamples: false,
 
+    // Auth & Portal State
+    token: null,
+    user: null,
+    portal: 'student',   // 'student' or 'admin'
+
     // UI state
     mode: 'balanced',           // current retrieval mode
     streaming: false,           // is a chat request in-flight?
@@ -38,10 +43,28 @@
     // citationKey = "filename#score_id" from [file.pdf#2.0]
   };
 
-  // Read mode from localStorage
+  // Read saved settings
   try {
-    const saved = localStorage.getItem('chat_mode');
-    if (['fast', 'balanced', 'thorough'].includes(saved)) state.mode = saved;
+    const savedMode = localStorage.getItem('chat_mode');
+    if (['fast', 'balanced', 'thorough'].includes(savedMode)) state.mode = savedMode;
+
+    const savedToken = localStorage.getItem('doctalk_token');
+    const savedUser = localStorage.getItem('doctalk_user');
+    const savedPortal = localStorage.getItem('doctalk_portal');
+    if (savedToken && savedUser) {
+      state.token = savedToken;
+      state.user = JSON.parse(savedUser);
+      state.portal = savedPortal || (state.user && state.user.role) || 'student';
+    } else {
+      // Default demo initial session
+      state.user = {
+        id: 'demo-student',
+        name: 'Alex Student',
+        email: 'student@doctalk.com',
+        role: 'student'
+      };
+      state.portal = 'student';
+    }
   } catch (_) { /* ignore */ }
 
   /* ══════════════════════════════════════════════════════════════════════════
@@ -51,14 +74,53 @@
   /** Core fetch helper. Throws {message, network:true} on network failure. */
   async function request(path, opts = {}) {
     const url = API_BASE + path;
+    opts.headers = opts.headers || {};
+    if (state.token) {
+      if (opts.headers instanceof Headers) {
+        if (!opts.headers.has('Authorization')) {
+          opts.headers.set('Authorization', `Bearer ${state.token}`);
+        }
+      } else if (!opts.headers['Authorization']) {
+        opts.headers['Authorization'] = `Bearer ${state.token}`;
+      }
+    }
     try {
       const res = await fetch(url, opts);
+      if (res.status === 401 && !path.startsWith('/api/auth/')) {
+        showAuthModal('Session expired. Please sign in again.');
+      }
       return res;
     } catch (err) {
       const e = new Error(`Can't reach the backend at ${API_BASE}`);
       e.network = true;
       throw e;
     }
+  }
+
+  async function apiLogin(email, password) {
+    const res = await request('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Invalid credentials' }));
+      throw new Error(err.detail || 'Login failed');
+    }
+    return res.json();
+  }
+
+  async function apiRegister(name, email, password, role) {
+    const res = await request('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, role })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: 'Registration failed' }));
+      throw new Error(err.detail || 'Registration failed');
+    }
+    return res.json();
   }
 
   async function apiGetState() {
@@ -806,10 +868,20 @@
       chip.addEventListener('click', e => {
         e.stopPropagation();
         const srcId = chip.dataset.srcId;
-        if (srcId) {
-          activateMobileTab('panel-sources');
-          highlightSourceCard(srcId);
+        if (!srcId) return;
+
+        // In Student Portal: open the clean distraction-free citation modal
+        if (state.portal === 'student') {
+          const src = (sources || []).find(s => s.id === srcId);
+          if (src) {
+            showCitationModal(src, chip.textContent);
+            return;
+          }
         }
+
+        // In Admin Studio: open and scroll the deep Sources & Trace inspector
+        activateMobileTab('panel-sources');
+        highlightSourceCard(srcId);
       });
     });
   }
@@ -1354,6 +1426,297 @@
         }
       });
     }
+
+    // ── User Dropdown & Portal Switching ──
+    const userBtn = document.getElementById('user-btn');
+    const userDropdown = document.getElementById('user-dropdown');
+    if (userBtn && userDropdown) {
+      userBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        const open = userDropdown.classList.contains('open');
+        userDropdown.classList.toggle('open', !open);
+        userBtn.setAttribute('aria-expanded', String(!open));
+      });
+
+      document.addEventListener('click', e => {
+        if (!userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
+          userDropdown.classList.remove('open');
+          userBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    const switchPortalBtn = document.getElementById('switch-portal-btn');
+    if (switchPortalBtn) {
+      switchPortalBtn.addEventListener('click', () => {
+        if (userDropdown) userDropdown.classList.remove('open');
+        const nextPortal = state.portal === 'student' ? 'admin' : 'student';
+        setPortal(nextPortal);
+        toast(`Switched to ${nextPortal === 'admin' ? 'Admin Studio' : 'Student Portal'}`, 'info');
+      });
+    }
+
+    const openLoginBtn = document.getElementById('open-login-btn');
+    if (openLoginBtn) {
+      openLoginBtn.addEventListener('click', () => {
+        if (userDropdown) userDropdown.classList.remove('open');
+        showAuthModal();
+      });
+    }
+
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        if (userDropdown) userDropdown.classList.remove('open');
+        state.token = null;
+        state.user = {
+          name: 'Guest User',
+          email: 'guest@doctalk.com',
+          role: 'student'
+        };
+        try {
+          localStorage.removeItem('doctalk_token');
+          localStorage.removeItem('doctalk_user');
+        } catch (_) {}
+        setPortal('student');
+        toast('Signed out', 'info');
+        showAuthModal();
+      });
+    }
+
+    // ── Quick Demo Login Buttons ──
+    const demoStudentBtn = document.getElementById('demo-student-btn');
+    if (demoStudentBtn) {
+      demoStudentBtn.addEventListener('click', async () => {
+        try {
+          const res = await apiLogin('student@doctalk.com', 'student123');
+          state.token = res.token;
+          state.user = res.user;
+          try {
+            localStorage.setItem('doctalk_token', res.token);
+            localStorage.setItem('doctalk_user', JSON.stringify(res.user));
+          } catch (_) {}
+          setPortal('student');
+          hideAuthModal();
+          toast('Logged in as Alex Student (Student Portal)', 'success');
+        } catch (err) {
+          // If offline/mock server fallback
+          state.user = { name: 'Alex Student', email: 'student@doctalk.com', role: 'student' };
+          setPortal('student');
+          hideAuthModal();
+          toast('Entered Student Portal (Demo Mode)', 'success');
+        }
+      });
+    }
+
+    const demoAdminBtn = document.getElementById('demo-admin-btn');
+    if (demoAdminBtn) {
+      demoAdminBtn.addEventListener('click', async () => {
+        try {
+          const res = await apiLogin('admin@doctalk.com', 'admin123');
+          state.token = res.token;
+          state.user = res.user;
+          try {
+            localStorage.setItem('doctalk_token', res.token);
+            localStorage.setItem('doctalk_user', JSON.stringify(res.user));
+          } catch (_) {}
+          setPortal('admin');
+          hideAuthModal();
+          toast('Logged in as Prof. Sarah (Admin Studio)', 'success');
+        } catch (err) {
+          state.user = { name: 'Prof. Sarah (Admin)', email: 'admin@doctalk.com', role: 'admin' };
+          setPortal('admin');
+          hideAuthModal();
+          toast('Entered Admin Studio (Demo Mode)', 'success');
+        }
+      });
+    }
+
+    // ── Auth Modal Tabs ──
+    const tabLogin = document.getElementById('tab-login');
+    const tabRegister = document.getElementById('tab-register');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+
+    if (tabLogin && tabRegister && loginForm && registerForm) {
+      tabLogin.addEventListener('click', () => {
+        tabLogin.classList.add('active');
+        tabRegister.classList.remove('active');
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+      });
+      tabRegister.addEventListener('click', () => {
+        tabRegister.classList.add('active');
+        tabLogin.classList.remove('active');
+        registerForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+      });
+    }
+
+    // ── Login Form Submit ──
+    if (loginForm) {
+      loginForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const errBox = document.getElementById('login-error');
+        errBox.classList.add('hidden');
+        try {
+          const res = await apiLogin(email, password);
+          state.token = res.token;
+          state.user = res.user;
+          try {
+            localStorage.setItem('doctalk_token', res.token);
+            localStorage.setItem('doctalk_user', JSON.stringify(res.user));
+          } catch (_) {}
+          setPortal(res.user.role || 'student');
+          hideAuthModal();
+          toast(`Welcome, ${res.user.name}!`, 'success');
+        } catch (err) {
+          errBox.textContent = err.message;
+          errBox.classList.remove('hidden');
+        }
+      });
+    }
+
+    // ── Register Form Submit ──
+    if (registerForm) {
+      registerForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        const name = document.getElementById('reg-name').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const password = document.getElementById('reg-password').value;
+        const role = document.getElementById('reg-role').value;
+        const errBox = document.getElementById('register-error');
+        errBox.classList.add('hidden');
+        try {
+          const res = await apiRegister(name, email, password, role);
+          state.token = res.token;
+          state.user = res.user;
+          try {
+            localStorage.setItem('doctalk_token', res.token);
+            localStorage.setItem('doctalk_user', JSON.stringify(res.user));
+          } catch (_) {}
+          setPortal(res.user.role || 'student');
+          hideAuthModal();
+          toast(`Account created! Welcome, ${res.user.name}`, 'success');
+        } catch (err) {
+          errBox.textContent = err.message;
+          errBox.classList.remove('hidden');
+        }
+      });
+    }
+
+    // ── Modal Close Handlers ──
+    const authCloseBtn = document.getElementById('auth-close-btn');
+    if (authCloseBtn) authCloseBtn.addEventListener('click', hideAuthModal);
+
+    const citationCloseBtn = document.getElementById('citation-close-btn');
+    const citationDoneBtn = document.getElementById('citation-done-btn');
+    if (citationCloseBtn) citationCloseBtn.addEventListener('click', hideCitationModal);
+    if (citationDoneBtn) citationDoneBtn.addEventListener('click', hideCitationModal);
+
+    // Initial Portal setup
+    setPortal(state.portal || 'student');
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     §13B PORTAL & MODAL HELPERS
+     ══════════════════════════════════════════════════════════════════════════ */
+  function updateUserUI() {
+    const user = state.user || { name: 'Guest', email: 'guest@doctalk.com', role: 'student' };
+    const userName = document.getElementById('user-name');
+    const userAvatar = document.getElementById('user-avatar');
+    const dropName = document.getElementById('dropdown-user-name');
+    const dropEmail = document.getElementById('dropdown-user-email');
+    const dropRole = document.getElementById('dropdown-user-role-pill');
+
+    if (userName) userName.textContent = user.name;
+    if (dropName) dropName.textContent = user.name;
+    if (dropEmail) dropEmail.textContent = user.email;
+
+    const isAdmin = state.portal === 'admin';
+    if (userAvatar) userAvatar.textContent = isAdmin ? '🛡️' : '🎓';
+
+    if (dropRole) {
+      dropRole.textContent = isAdmin ? 'Admin / Instructor' : 'Student';
+      dropRole.className = `role-pill ${isAdmin ? 'admin' : 'student'}`;
+    }
+  }
+
+  function setPortal(portalRole) {
+    state.portal = portalRole;
+    try { localStorage.setItem('doctalk_portal', portalRole); } catch (_) {}
+
+    const appShell = document.getElementById('app-shell');
+    if (appShell) {
+      appShell.classList.remove('portal-student', 'portal-admin');
+      appShell.classList.add(`portal-${portalRole}`);
+    }
+
+    const badge = document.getElementById('portal-badge');
+    const switchBtn = document.getElementById('switch-portal-btn');
+    const filesTitle = document.querySelector('#panel-files .panel-title');
+
+    if (portalRole === 'student') {
+      if (badge) {
+        badge.textContent = '🎓 Student Portal';
+        badge.className = 'portal-badge student';
+      }
+      if (switchBtn) switchBtn.textContent = '🛡️ Switch to Admin Studio';
+      if (filesTitle) filesTitle.textContent = 'Course Notes';
+    } else {
+      if (badge) {
+        badge.textContent = '🛡️ Admin Studio';
+        badge.className = 'portal-badge admin';
+      }
+      if (switchBtn) switchBtn.textContent = '🎓 Switch to Student Portal';
+      if (filesTitle) filesTitle.textContent = 'Document Manager';
+    }
+
+    updateUserUI();
+  }
+
+  function showAuthModal(msg) {
+    const overlay = document.getElementById('auth-overlay');
+    if (!overlay) return;
+    const errBox = document.getElementById('login-error');
+    if (errBox) {
+      if (msg) {
+        errBox.textContent = msg;
+        errBox.classList.remove('hidden');
+      } else {
+        errBox.classList.add('hidden');
+      }
+    }
+    overlay.classList.remove('hidden');
+  }
+
+  function hideAuthModal() {
+    const overlay = document.getElementById('auth-overlay');
+    if (overlay) overlay.classList.add('hidden');
+  }
+
+  function showCitationModal(src, label) {
+    const overlay = document.getElementById('citation-overlay');
+    if (!overlay) return;
+
+    const badgeNum = document.getElementById('citation-badge-num');
+    const docName = document.getElementById('citation-source-doc');
+    const pageTag = document.getElementById('citation-source-page');
+    const textEl = document.getElementById('citation-text');
+
+    if (badgeNum) badgeNum.textContent = label || '[1]';
+    if (docName) docName.textContent = `📄 ${src.source || 'Document'}`;
+    if (pageTag) pageTag.textContent = src.page ? `Page ${src.page}` : (src.section || 'Excerpt');
+    if (textEl) textEl.textContent = src.text || 'No text excerpt provided.';
+
+    overlay.classList.remove('hidden');
+  }
+
+  function hideCitationModal() {
+    const overlay = document.getElementById('citation-overlay');
+    if (overlay) overlay.classList.add('hidden');
   }
 
   /* ══════════════════════════════════════════════════════════════════════════
