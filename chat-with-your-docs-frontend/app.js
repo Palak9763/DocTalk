@@ -21,10 +21,10 @@
     models: {},
     hasSamples: false,
 
-    // Auth & Portal State
+    // Auth state
     token: null,
-    user: null,
-    portal: 'student',   // 'student' or 'admin'
+    user: null,         // {id, name, email, role, created_at} — null means not signed in
+    portal: 'student',  // 'student' or 'admin'
 
     // UI state
     mode: 'balanced',           // current retrieval mode
@@ -43,28 +43,28 @@
     // citationKey = "filename#score_id" from [file.pdf#2.0]
   };
 
-  // Read saved settings
+  // ── Session restore (remember-me uses localStorage, else sessionStorage) ──
+  function _storage(key) {
+    try {
+      const ls = localStorage.getItem(key);
+      if (ls !== null) return ls;
+      return sessionStorage.getItem(key);
+    } catch (_) { return null; }
+  }
+
   try {
     const savedMode = localStorage.getItem('chat_mode');
     if (['fast', 'balanced', 'thorough'].includes(savedMode)) state.mode = savedMode;
 
-    const savedToken = localStorage.getItem('doctalk_token');
-    const savedUser = localStorage.getItem('doctalk_user');
-    const savedPortal = localStorage.getItem('doctalk_portal');
+    const savedToken = _storage('doctalk_token');
+    const savedUser  = _storage('doctalk_user');
+    const savedPortal = _storage('doctalk_portal');
     if (savedToken && savedUser) {
-      state.token = savedToken;
-      state.user = JSON.parse(savedUser);
+      state.token  = savedToken;
+      state.user   = JSON.parse(savedUser);
       state.portal = savedPortal || (state.user && state.user.role) || 'student';
-    } else {
-      // Default demo initial session
-      state.user = {
-        id: 'demo-student',
-        name: 'Alex Student',
-        email: 'student@doctalk.com',
-        role: 'student'
-      };
-      state.portal = 'student';
     }
+    // No fallback demo user — show auth modal instead (handled in init())
   } catch (_) { /* ignore */ }
 
   /* ══════════════════════════════════════════════════════════════════════════
@@ -110,17 +110,48 @@
     return res.json();
   }
 
-  async function apiRegister(name, email, password, role) {
-    const res = await request('/api/auth/register', {
+  async function apiSignup(name, email, password) {
+    const res = await request('/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, role })
+      body: JSON.stringify({ name, email, password })
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({ detail: 'Registration failed' }));
-      throw new Error(err.detail || 'Registration failed');
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 409) throw new Error(data.detail || 'Email already registered.');
+      if (res.status === 422) {
+        // FastAPI validation error: extract first message
+        const msg = (data.detail && Array.isArray(data.detail))
+          ? data.detail.map(e => e.msg).join(', ')
+          : (data.detail || 'Invalid data.');
+        throw new Error(msg);
+      }
+      throw new Error(data.detail || 'Registration failed');
     }
     return res.json();
+  }
+
+  async function apiChangePassword(currentPassword, newPassword) {
+    const res = await request('/api/auth/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || 'Failed to change password.');
+    }
+  }
+
+  async function apiGetAdminUsers() {
+    const res = await request('/api/admin/users');
+    if (res.status === 403) throw new Error('Admin access required.');
+    if (!res.ok) throw new Error('Failed to load users.');
+    return res.json();
+  }
+
+  async function apiLogout() {
+    try { await request('/api/auth/logout', { method: 'POST' }); } catch (_) {}
   }
 
   async function apiGetState() {

@@ -13,86 +13,58 @@
 </head>
 <body>
   <div id="app-shell">
-
-    <!-- ── Error Banner ──────────────────────────────────────────────────── -->
     <div id="error-banner" role="alert" aria-live="assertive">
-      <span aria-hidden="true">⚠️</span>
+      <span aria-hidden="true">&#x26A0;&#xFE0F;</span>
       <span id="error-banner-text"></span>
       <button id="retry-btn" type="button">Retry</button>
     </div>
-
-    <!-- ── Top Bar ───────────────────────────────────────────────────────── -->
     <header id="top-bar" role="banner">
       <div id="logo-group">
-        <div id="logo-icon" aria-hidden="true">💬</div>
+        <div id="logo-icon" aria-hidden="true">&#x1F4AC;</div>
         <h1 id="app-title">Chat With Your Docs</h1>
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
         <div id="model-chips" role="list" aria-label="Active models"></div>
-        <div id="portal-badge" class="portal-badge" title="Current Active Portal">🎓 Student Portal</div>
+        <div id="portal-badge" class="portal-badge" title="Current Active Portal">&#x1F393; Student Portal</div>
         <div class="user-menu-wrapper" style="position: relative;">
           <button id="user-btn" class="user-profile-btn" type="button" aria-label="User Profile" aria-haspopup="true" aria-expanded="false">
-            <span id="user-avatar" class="user-avatar-circle">🎓</span>
-            <span id="user-name" class="user-display-name">Alex Student</span>
-            <span class="user-caret">▾</span>
+            <span id="user-avatar" class="user-avatar-circle">&#x1F464;</span>
+            <span id="user-name" class="user-display-name">Signing in&#x2026;</span>
+            <span class="user-caret">&#x25BE;</span>
           </button>
           <div id="user-dropdown" class="dropdown-menu user-dropdown-box" role="menu">
             <div class="user-dropdown-header">
-              <strong id="dropdown-user-name">Alex Student</strong>
-              <small id="dropdown-user-email">student@doctalk.com</small>
+              <strong id="dropdown-user-name">&#x2014;</strong>
+              <small id="dropdown-user-email">&#x2014;</small>
               <div id="dropdown-user-role-pill" class="role-pill student">Student</div>
             </div>
             <div class="dropdown-divider"></div>
-            <button class="dropdown-item" id="switch-portal-btn" role="menuitem" type="button">
-              🔄 Switch to Admin Studio
-            </button>
-            <button class="dropdown-item" id="open-login-btn" role="menuitem" type="button">
-              🔑 Switch User / Sign In
-            </button>
-            <button class="dropdown-item danger" id="logout-btn" role="menuitem" type="button">
-              🚪 Sign Out
-            </button>
+            <button class="dropdown-item" id="account-settings-btn" role="menuitem" type="button">&#x2699;&#xFE0F; Account Settings</button>
+            <button class="dropdown-item admin-only hidden" id="admin-users-btn" role="menuitem" type="button">&#x1F465; Manage Users</button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item danger" id="logout-btn" role="menuitem" type="button">&#x1F6AA; Sign Out</button>
           </div>
         </div>
-        <button id="theme-toggle-btn" class="icon-btn" type="button" aria-label="Toggle theme" title="Toggle dark/light mode" style="margin-left: 2px; font-size: 14px;">🌙</button>
+        <button id="theme-toggle-btn" class="icon-btn" type="button" aria-label="Toggle theme" title="Toggle dark/light mode" style="margin-left: 2px; font-size: 14px;">&#x1F319;</button>
       </div>
     </header>
-
-    <!-- ── Mobile Tabs ───────────────────────────────────────────────────── -->
     <nav id="tab-bar" role="tablist" aria-label="Panel navigation">
-      <button class="tab-btn active" role="tab" aria-selected="true"
-              aria-controls="panel-files"   id="tab-files"   data-panel="panel-files">📁 Files</button>
-      <button class="tab-btn"        role="tab" aria-selected="false"
-              aria-controls="panel-chat"    id="tab-chat"    data-panel="panel-chat">💬 Chat</button>
-      <button class="tab-btn"        role="tab" aria-selected="false"
-              aria-controls="panel-sources" id="tab-sources" data-panel="panel-sources">🔍 Trace</button>
+      <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="panel-files" id="tab-files" data-panel="panel-files">&#x1F4C1; Files</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-chat" id="tab-chat" data-panel="panel-chat">&#x1F4AC; Chat</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-sources" id="tab-sources" data-panel="panel-sources">&#x1F50D; Trace</button>
     </nav>
-
-    <!-- ── Main Area ─────────────────────────────────────────────────────── -->
     <main id="main-area" role="main">
-
-      <!-- LEFT: Files Panel ─────────────────────────────────────────────── -->
-      <section id="panel-files" class="panel tab-active" role="tabpanel"
-               aria-labelledby="tab-files">
+      <section id="panel-files" class="panel tab-active" role="tabpanel" aria-labelledby="tab-files">
         <div class="panel-header">
           <span class="panel-title">Files</span>
           <div class="dropdown-wrapper">
-            <button class="icon-btn" id="files-menu-btn" type="button"
-                    aria-label="Files menu" aria-haspopup="true" aria-expanded="false">
-              ···
-            </button>
+            <button class="icon-btn" id="files-menu-btn" type="button" aria-label="Files menu" aria-haspopup="true" aria-expanded="false">&middot;&middot;&middot;</button>
             <div class="dropdown-menu" id="files-dropdown" role="menu">
-              <button class="dropdown-item" id="load-samples-btn" role="menuitem" type="button">
-                📄 Load sample notes
-              </button>
-              <button class="dropdown-item danger" id="remove-all-btn" role="menuitem" type="button">
-                🗑️ Remove all files
-              </button>
+              <button class="dropdown-item" id="load-samples-btn" role="menuitem" type="button">&#x1F4C4; Load sample notes</button>
+              <button class="dropdown-item danger" id="remove-all-btn" role="menuitem" type="button">&#x1F5D1;&#xFE0F; Remove all files</button>
             </div>
           </div>
         </div>
-
-        <!-- Confirm strip -->
         <div id="confirm-strip" role="alert">
           <span>Remove <strong>all</strong> documents? This cannot be undone.</span>
           <div class="confirm-actions">
@@ -100,163 +72,92 @@
             <button class="btn-sm danger" id="confirm-ok-btn" type="button">Remove All</button>
           </div>
         </div>
-
         <div class="panel-body" id="files-panel-body">
-          <!-- Uploaded Docs section -->
-          <button class="section-toggle" id="docs-toggle" type="button"
-                  aria-expanded="true" aria-controls="docs-body">
-            <span>📂</span>
-            <span>Uploaded Documents</span>
-            <span class="caret" aria-hidden="true">▾</span>
+          <button class="section-toggle" id="docs-toggle" type="button" aria-expanded="true" aria-controls="docs-body">
+            <span>&#x1F4C2;</span><span>Uploaded Documents</span><span class="caret" aria-hidden="true">&#x25BE;</span>
           </button>
           <div class="section-body" id="docs-body">
             <div id="file-list" role="list" aria-label="Uploaded files"></div>
-            <div id="no-docs-yet" style="padding:14px 16px;font-size:12px;color:var(--text-muted);">
-              No files uploaded yet.
-            </div>
+            <div id="no-docs-yet" style="padding:14px 16px;font-size:12px;color:var(--text-muted);">No files uploaded yet.</div>
           </div>
-
-          <!-- Drop zone -->
-          <div id="drop-zone" role="button" tabindex="0"
-               aria-label="Upload files. Drag and drop, or press Enter to open file picker.">
-            <span id="drop-zone-icon" aria-hidden="true">⬆️</span>
+          <div id="drop-zone" role="button" tabindex="0" aria-label="Upload files. Drag and drop, or press Enter to open file picker.">
+            <span id="drop-zone-icon" aria-hidden="true">&#x2B06;&#xFE0F;</span>
             <p id="drop-zone-title">Drag &amp; Drop or Click to Upload</p>
             <p id="drop-zone-sub">PDF, DOCX, MD, TXT &middot; up to 50 MB</p>
-            <input type="file" id="file-input" multiple
-                   accept=".pdf,.docx,.md,.txt"
-                   aria-label="Select files to upload" />
+            <input type="file" id="file-input" multiple accept=".pdf,.docx,.md,.txt" aria-label="Select files to upload" />
           </div>
         </div>
       </section>
-
-      <!-- CENTRE: Chat Panel ────────────────────────────────────────────── -->
-      <section id="panel-chat" class="panel" role="tabpanel"
-               aria-labelledby="tab-chat">
-
-        <!-- Mode switch -->
+      <section id="panel-chat" class="panel" role="tabpanel" aria-labelledby="tab-chat">
         <div id="mode-bar">
           <div id="mode-switch" role="group" aria-label="Retrieval mode">
-            <button class="mode-btn" id="mode-fast" data-mode="fast" type="button"
-                    title="Fast: ~2 model calls, no reranker">Fast</button>
-            <button class="mode-btn active" id="mode-balanced" data-mode="balanced" type="button"
-                    title="Balanced: ~3 model calls with reranker">Balanced</button>
-            <button class="mode-btn" id="mode-thorough" data-mode="thorough" type="button"
-                    title="Thorough: ~9 model calls with LLM grading and verification">Thorough</button>
+            <button class="mode-btn" id="mode-fast" data-mode="fast" type="button" title="Fast: ~2 model calls, no reranker">Fast</button>
+            <button class="mode-btn active" id="mode-balanced" data-mode="balanced" type="button" title="Balanced: ~3 model calls with reranker">Balanced</button>
+            <button class="mode-btn" id="mode-thorough" data-mode="thorough" type="button" title="Thorough: ~9 model calls with LLM grading and verification">Thorough</button>
           </div>
         </div>
-
-        <!-- Messages -->
         <div id="message-list" role="log" aria-live="polite" aria-label="Conversation">
-          <!-- Welcome card shown initially -->
           <div id="welcome-card">
-            <div class="welcome-logo" aria-hidden="true">💬</div>
+            <div class="welcome-logo" aria-hidden="true">&#x1F4AC;</div>
             <h2 class="welcome-title">Chat With Your Docs</h2>
             <p class="welcome-sub">Upload your documents and ask questions. Your data stays local.</p>
             <div class="example-questions" id="example-questions" role="list">
-              <button class="example-q" role="listitem" type="button">
-                📝 What are the main topics covered in my documents?
-              </button>
-              <button class="example-q" role="listitem" type="button">
-                🔍 Summarize the key concepts and findings.
-              </button>
-              <button class="example-q" role="listitem" type="button">
-                💡 What recommendations or conclusions are made?
-              </button>
+              <button class="example-q" role="listitem" type="button">&#x1F4DD; What are the main topics covered in my documents?</button>
+              <button class="example-q" role="listitem" type="button">&#x1F50D; Summarize the key concepts and findings.</button>
+              <button class="example-q" role="listitem" type="button">&#x1F4A1; What recommendations or conclusions are made?</button>
             </div>
           </div>
         </div>
-
-        <!-- Composer -->
         <div id="composer-area">
           <div id="composer">
-            <textarea id="chat-input" rows="1"
-                      placeholder="Ask a question about your documents…"
-                      aria-label="Chat message input"
-                      aria-multiline="true"></textarea>
-            <button class="composer-btn" id="stop-btn" type="button" aria-label="Stop generating">
-              ⏹
-            </button>
-            <button class="composer-btn" id="send-btn" type="button" aria-label="Send message">
-              ➤
-            </button>
+            <textarea id="chat-input" rows="1" placeholder="Ask a question about your documents&#x2026;" aria-label="Chat message input" aria-multiline="true"></textarea>
+            <button class="composer-btn" id="stop-btn" type="button" aria-label="Stop generating">&#x23F9;</button>
+            <button class="composer-btn" id="send-btn" type="button" aria-label="Send message">&#x27A4;</button>
           </div>
         </div>
       </section>
-
-      <!-- RIGHT: Sources & Trace Panel ────────────────────────────────── -->
-      <section id="panel-sources" class="panel" role="tabpanel"
-               aria-labelledby="tab-sources">
-        <div class="panel-header">
-          <span class="panel-title">Sources &amp; Trace</span>
-        </div>
+      <section id="panel-sources" class="panel" role="tabpanel" aria-labelledby="tab-sources">
+        <div class="panel-header"><span class="panel-title">Sources &amp; Trace</span></div>
         <div class="panel-body" id="sources-panel-body">
           <div id="sources-empty">
-            <span id="sources-empty-icon" aria-hidden="true">🔍</span>
+            <span id="sources-empty-icon" aria-hidden="true">&#x1F50D;</span>
             <p>Ask a question to see sources and the reasoning trace here.</p>
           </div>
         </div>
       </section>
+    </main>
+  </div>
 
-    </main><!-- /#main-area -->
-  </div><!-- /#app-shell -->
-
-  <!-- ── Authentication Modal ─────────────────────────────────────────── -->
-  <div id="auth-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  <!-- Sign-In / Sign-Up Modal (no close button; user must authenticate) -->
+  <div id="auth-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-title">
     <div class="modal-card auth-card">
-      <button type="button" class="modal-close-btn" id="auth-close-btn" aria-label="Close modal">✕</button>
-
       <div class="auth-header">
-        <div class="welcome-logo" style="width:46px; height:46px; font-size:22px; margin:0 auto 12px; display:flex; align-items:center; justify-content:center; border-radius:12px; background:linear-gradient(135deg, var(--accent), #a855f7);">💬</div>
-        <h2 id="auth-title" class="auth-title">DocTalk Access Portal</h2>
-        <p class="auth-subtitle">Select a demo portal or sign in to continue</p>
+        <div class="welcome-logo" style="width:46px;height:46px;font-size:22px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:linear-gradient(135deg,var(--accent),#a855f7);">&#x1F4AC;</div>
+        <h2 id="auth-title" class="auth-title">Welcome to DocTalk</h2>
+        <p class="auth-subtitle">Sign in or create an account to continue</p>
       </div>
-
-      <!-- Quick 1-Click Demo Portals -->
-      <div class="demo-login-box">
-        <span class="demo-box-label">⚡ QUICK DEMO ACCESS</span>
-        <div class="demo-btn-grid">
-          <button type="button" class="demo-role-btn demo-student" id="demo-student-btn">
-            <span class="demo-icon">🎓</span>
-            <div class="demo-info">
-              <strong>Student Portal</strong>
-              <small>Clean study view &amp; clickable source citations</small>
-            </div>
-            <span class="demo-arrow">→</span>
-          </button>
-          <button type="button" class="demo-role-btn demo-admin" id="demo-admin-btn">
-            <span class="demo-icon">🛡️</span>
-            <div class="demo-info">
-              <strong>Admin Studio</strong>
-              <small>File management &amp; deep RAG trace inspection</small>
-            </div>
-            <span class="demo-arrow">→</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="auth-divider"><span>or sign in with email</span></div>
-
-      <!-- Auth Tabs -->
       <div class="auth-tabs" role="tablist">
         <button type="button" class="auth-tab active" id="tab-login" data-tab="login">Sign In</button>
         <button type="button" class="auth-tab" id="tab-register" data-tab="register">Create Account</button>
       </div>
-
-      <!-- Login Form -->
       <form id="login-form" class="auth-form">
         <div class="form-group">
           <label for="login-email">Email Address</label>
-          <input type="email" id="login-email" required placeholder="student@doctalk.com" autocomplete="email" />
+          <input type="email" id="login-email" required placeholder="you@example.com" autocomplete="email" />
         </div>
         <div class="form-group">
           <label for="login-password">Password</label>
-          <input type="password" id="login-password" required placeholder="••••••••" autocomplete="current-password" />
+          <input type="password" id="login-password" required placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" autocomplete="current-password" />
+        </div>
+        <div class="form-group remember-row">
+          <label class="checkbox-label" for="login-remember">
+            <input type="checkbox" id="login-remember" />
+            <span>Remember me</span>
+          </label>
         </div>
         <div id="login-error" class="auth-error-msg hidden"></div>
-        <button type="submit" class="auth-submit-btn" id="login-submit-btn">Sign In to Portal</button>
+        <button type="submit" class="auth-submit-btn" id="login-submit-btn">Sign In</button>
       </form>
-
-      <!-- Register Form -->
       <form id="register-form" class="auth-form hidden">
         <div class="form-group">
           <label for="reg-name">Full Name</label>
@@ -264,26 +165,65 @@
         </div>
         <div class="form-group">
           <label for="reg-email">Email Address</label>
-          <input type="email" id="reg-email" required placeholder="alex@university.edu" autocomplete="email" />
+          <input type="email" id="reg-email" required placeholder="you@example.com" autocomplete="email" />
         </div>
         <div class="form-group">
           <label for="reg-password">Password</label>
           <input type="password" id="reg-password" required minlength="4" placeholder="At least 4 characters" autocomplete="new-password" />
         </div>
-        <div class="form-group">
-          <label for="reg-role">Account Type</label>
-          <select id="reg-role" class="form-select">
-            <option value="student">Student (Read notes, ask questions, citations)</option>
-            <option value="admin">Admin / Instructor (Upload docs, trace pipeline)</option>
-          </select>
-        </div>
         <div id="register-error" class="auth-error-msg hidden"></div>
-        <button type="submit" class="auth-submit-btn" id="reg-submit-btn">Create &amp; Enter Portal</button>
+        <button type="submit" class="auth-submit-btn" id="reg-submit-btn">Create Account</button>
       </form>
     </div>
   </div>
 
-  <!-- ── Student Clean Citation Modal ────────────────────────────────────── -->
+  <!-- Account Settings Modal -->
+  <div id="account-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="account-title">
+    <div class="modal-card account-card">
+      <button type="button" class="modal-close-btn" id="account-close-btn" aria-label="Close account settings">&#x2715;</button>
+      <div class="auth-header">
+        <h2 id="account-title" class="auth-title">Account Settings</h2>
+        <p class="auth-subtitle" id="account-user-info">&#x2014;</p>
+      </div>
+      <div class="settings-section">
+        <h3 class="settings-section-title">Change Password</h3>
+        <form id="change-password-form" class="auth-form">
+          <div class="form-group">
+            <label for="current-password">Current Password</label>
+            <input type="password" id="current-password" required placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;" autocomplete="current-password" />
+          </div>
+          <div class="form-group">
+            <label for="new-password">New Password</label>
+            <input type="password" id="new-password" required minlength="4" placeholder="At least 4 characters" autocomplete="new-password" />
+          </div>
+          <div id="change-password-error" class="auth-error-msg hidden"></div>
+          <div id="change-password-success" class="auth-success-msg hidden">&#x2705; Password changed successfully.</div>
+          <button type="submit" class="auth-submit-btn" id="change-password-btn">Update Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Users Modal -->
+  <div id="admin-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="admin-title">
+    <div class="modal-card admin-card">
+      <button type="button" class="modal-close-btn" id="admin-close-btn" aria-label="Close user management">&#x2715;</button>
+      <div class="auth-header">
+        <h2 id="admin-title" class="auth-title">User Management</h2>
+        <p class="auth-subtitle">All registered users</p>
+      </div>
+      <div id="admin-users-loading" class="auth-subtitle" style="padding:16px 0;">Loading&#x2026;</div>
+      <div id="admin-users-error" class="auth-error-msg hidden"></div>
+      <div id="admin-users-table-wrap" class="hidden">
+        <table id="admin-users-table" class="users-table">
+          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Files</th><th>Joined</th><th>Last Login</th></tr></thead>
+          <tbody id="admin-users-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Citation Preview Modal -->
   <div id="citation-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="citation-title">
     <div class="modal-card citation-card">
       <div class="citation-header">
@@ -291,10 +231,10 @@
           <span class="citation-badge-pill" id="citation-badge-num">[1]</span>
           <div>
             <h3 id="citation-title" class="citation-title">Verified Source Excerpt</h3>
-            <span id="citation-source-doc" class="citation-doc-name">📄 document.pdf</span>
+            <span id="citation-source-doc" class="citation-doc-name">&#x1F4C4; document.pdf</span>
           </div>
         </div>
-        <button type="button" class="icon-btn" id="citation-close-btn" aria-label="Close citation preview">✕</button>
+        <button type="button" class="icon-btn" id="citation-close-btn" aria-label="Close citation preview">&#x2715;</button>
       </div>
       <div class="citation-excerpt-box">
         <div id="citation-text" class="citation-text">...</div>
@@ -306,9 +246,7 @@
     </div>
   </div>
 
-  <!-- Toast container -->
   <div id="toast-container" aria-live="polite" aria-label="Notifications"></div>
-
   <script src="app.js"></script>
 </body>
 </html>
