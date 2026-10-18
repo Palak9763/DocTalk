@@ -10,6 +10,10 @@ __pycache__/
 # Data and index stores
 index/
 data/library/
+data/app.db
+data/app.db-wal
+data/app.db-shm
+data/.jwt_secret
 
 # Virtual environment
 .venv/

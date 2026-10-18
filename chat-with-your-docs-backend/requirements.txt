@@ -19,3 +19,8 @@ python-multipart
 # Tests & Client
 httpx
 reportlab
+
+# Authentication & Security
+PyJWT
+argon2-cffi
+email-validator

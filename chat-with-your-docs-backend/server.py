@@ -1,4 +1,4 @@
-"""Phase 5: FastAPI REST API for Chat With Your Docs.
+"""Phase 5 + Auth: FastAPI REST API for Chat With Your Docs.
 
 Run with:
     python server.py [--host 127.0.0.1] [--port 8000]
@@ -8,25 +8,26 @@ Interactive docs: http://127.0.0.1:8000/docs
 
 from __future__ import annotations
 
+import argparse
 import asyncio
+from collections import OrderedDict
+from contextlib import asynccontextmanager
 import json
 import logging
 import os
+from pathlib import Path
 import queue
 import re
 import shutil
 import threading
-import unicodedata
-import argparse
-from contextlib import asynccontextmanager
-from pathlib import Path
 from typing import Any, AsyncGenerator, Literal
+import unicodedata
 
-import uvicorn
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, field_validator
+import uvicorn
 
 import auth
 from rag import config, llm
@@ -50,6 +51,7 @@ logger = logging.getLogger(__name__)
 _MODES: list[str] = ["fast", "balanced", "thorough"]
 _MAX_FILE_BYTES: int = int(os.getenv("MAX_FILE_BYTES", str(50 * 1024 * 1024)))  # 50 MB
 _ACCEPT_SUFFIXES: set[str] = {".pdf", ".docx", ".md", ".txt"}
+MAX_ACTIVE_PIPELINES: int = 5
 
 _DEFAULT_CORS_ORIGINS: list[str] = [
     "http://localhost:5173",
@@ -72,11 +74,8 @@ def _sanitise(name: str) -> str:
 
     Rejects path separators and '..' sequences before sanitising character set.
     """
-    # Take basename to strip any injected directory parts
     name = Path(name).name
-    # Normalise unicode to NFC
     name = unicodedata.normalize("NFC", name)
-    # Keep only safe characters: word chars, spaces, dots, hyphens
     name = re.sub(r"[^\w\s.\-]", "_", name, flags=re.UNICODE)
     name = name.strip()
     if not name or name in (".", ".."):
@@ -85,87 +84,87 @@ def _sanitise(name: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Document Store
+# Per-User Document Library & Registry
 # ---------------------------------------------------------------------------
 
-class DocumentStore:
-    """Thread-safe in-memory document registry backed by LIBRARY_DIR on disk.
+class UserLibrary:
+    """Per-user document storage and isolated RAG pipeline.
 
-    Attributes:
-        ready: True if a pipeline has been successfully built.
-        error: Last build error message, or None.
+    Operates in LIBRARY_DIR/<user_id>/. Uses an independent lock so uploads
+    and queries for this user never block other users.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, user_id: str, reranker: Reranker) -> None:
+        self.user_id = user_id
+        self._reranker = reranker
         self._lock = threading.Lock()
-        self._chunks: dict[str, list[Chunk]] = {}   # filename -> chunks
+        self._chunks: dict[str, list[Chunk]] = {}  # filename -> chunks
         self._pipeline: RAGPipeline | None = None
-        self._reranker: Reranker = Reranker(config.RERANK_MODEL)
         self.ready: bool = False
         self.error: str | None = None
+        self._scanned: bool = False
 
-    # ------------------------------------------------------------------
-    # Disk scanning
-    # ------------------------------------------------------------------
+    @property
+    def lib_dir(self) -> Path:
+        return Path(config.LIBRARY_DIR) / self.user_id
 
     def scan(self) -> None:
-        """Load every supported file in LIBRARY_DIR into the in-memory cache."""
-        lib = Path(config.LIBRARY_DIR)
-        lib.mkdir(parents=True, exist_ok=True)
-        for path in sorted(lib.iterdir()):
-            if not path.is_file():
-                continue
-            if path.suffix.lower() not in SUPPORTED:
-                continue
-            if path.name in self._chunks:
-                continue
-            try:
-                self._chunks[path.name] = load_document(path)
-                logger.info("Scanned %s (%d chunks)", path.name, len(self._chunks[path.name]))
-            except Exception as exc:
-                logger.warning("Skipping %s during scan: %s", path.name, exc)
-
-    # ------------------------------------------------------------------
-    # CRUD
-    # ------------------------------------------------------------------
+        """Scan this user's directory and load all supported documents."""
+        with self._lock:
+            self.lib_dir.mkdir(parents=True, exist_ok=True)
+            self._chunks.clear()
+            for path in sorted(self.lib_dir.iterdir()):
+                if not path.is_file():
+                    continue
+                if path.suffix.lower() not in SUPPORTED:
+                    continue
+                try:
+                    self._chunks[path.name] = load_document(path)
+                    logger.info("[%s] Scanned %s (%d chunks)", self.user_id, path.name, len(self._chunks[path.name]))
+                except Exception as exc:
+                    logger.warning("[%s] Skipping %s during scan: %s", self.user_id, path.name, exc)
+            self._scanned = True
 
     def add(self, filename: str, data: bytes) -> list[Chunk]:
-        """Write data to LIBRARY_DIR and parse into chunks. Returns the chunks."""
-        lib = Path(config.LIBRARY_DIR)
-        lib.mkdir(parents=True, exist_ok=True)
-        dest = lib / filename
+        """Write file into user's private library, parse, and update chunk cache."""
+        self.lib_dir.mkdir(parents=True, exist_ok=True)
+        dest = self.lib_dir / filename
         dest.write_bytes(data)
-        chunks = load_document(dest)
+        try:
+            chunks = load_document(dest)
+        except Exception:
+            if dest.exists():
+                dest.unlink()
+            raise
         with self._lock:
             self._chunks[filename] = chunks
         return chunks
 
     def remove(self, name: str) -> None:
-        """Remove a file from disk and the chunk cache. No-op if not present."""
+        """Remove a file from disk and chunk cache for this user."""
         with self._lock:
             self._chunks.pop(name, None)
-        path = Path(config.LIBRARY_DIR) / name
+        path = self.lib_dir / name
         if path.exists():
             path.unlink()
 
     def clear(self) -> None:
-        """Remove every uploaded file from disk and the chunk cache."""
-        names = list(self._chunks.keys())
-        for name in names:
-            self.remove(name)
-
-    # ------------------------------------------------------------------
-    # Build
-    # ------------------------------------------------------------------
+        """Remove every file and chunk for this user."""
+        with self._lock:
+            self._chunks.clear()
+        if self.lib_dir.exists():
+            for p in self.lib_dir.iterdir():
+                if p.is_file():
+                    try:
+                        p.unlink()
+                    except Exception as exc:
+                        logger.warning("[%s] Failed to remove %s: %s", self.user_id, p, exc)
 
     def _all_chunks(self) -> list[Chunk]:
         return [c for chunks in self._chunks.values() for c in chunks]
 
     def build(self) -> None:
-        """(Re)build the RAGPipeline over all current chunks, sharing the Reranker.
-
-        Raises on errors (Ollama down, etc.). Use try_build() for safe variant.
-        """
+        """(Re)build the RAGPipeline for this user using the shared Reranker."""
         with self._lock:
             chunks = self._all_chunks()
             if not chunks:
@@ -182,89 +181,164 @@ class DocumentStore:
             self.ready = True
             self.error = None
             logger.info(
-                "Pipeline rebuilt: %d chunks across %d files",
+                "[%s] Pipeline rebuilt: %d chunks across %d files",
+                self.user_id,
                 len(chunks),
                 len(self._chunks),
             )
 
     def try_build(self) -> None:
-        """Build the pipeline, catching all exceptions into self.error."""
+        """Safe build wrapper that records errors."""
         try:
             self.build()
         except Exception as exc:
             msg = str(exc)
-            # Surface Ollama connectivity problems clearly
             if "connect" in msg.lower() or "connection" in msg.lower():
-                msg = (
-                    f"Ollama is not reachable at {config.OLLAMA_HOST}. "
-                    "Start Ollama and retry."
-                )
+                msg = f"Ollama is not reachable at {config.OLLAMA_HOST}. Start Ollama and retry."
             self.error = msg
             self.ready = False
-            logger.error("Pipeline build failed: %s", msg)
-
-    # ------------------------------------------------------------------
-    # Query
-    # ------------------------------------------------------------------
+            logger.error("[%s] Pipeline build failed: %s", self.user_id, msg)
 
     def pipeline_for(self, mode: str) -> RAGPipeline:
-        """Return a config-cloned pipeline for the given preset mode.
-
-        Raises:
-            RuntimeError: If no pipeline is ready.
-        """
-        if not self.ready or self._pipeline is None:
-            raise RuntimeError("No pipeline is ready.")
-        return self._pipeline.with_config(PRESETS[mode])
-
-    # ------------------------------------------------------------------
-    # State helpers
-    # ------------------------------------------------------------------
+        """Return a config-cloned pipeline for the given preset mode."""
+        with self._lock:
+            if not self.ready or self._pipeline is None:
+                # If pipeline was evicted or not yet built but files exist, rebuild lazily
+                if self._chunks or any(self.lib_dir.glob("*")):
+                    if not self._scanned:
+                        self.scan()
+                    self.build()
+            if not self.ready or self._pipeline is None:
+                raise RuntimeError("No pipeline is ready.")
+            return self._pipeline.with_config(PRESETS[mode])
 
     def file_infos(self) -> list[dict[str, Any]]:
-        """Return per-file metadata for the API state response."""
-        lib = Path(config.LIBRARY_DIR)
+        """Return file metadata list for this user."""
+        self.lib_dir.mkdir(parents=True, exist_ok=True)
         infos = []
-        for name, chunks in self._chunks.items():
-            path = lib / name
-            size = path.stat().st_size if path.exists() else 0
-            # Infer pages: PDFs have int page numbers
-            pages_set = {c.page for c in chunks if c.page is not None}
-            pages = max(pages_set) if pages_set else None
-            suffix = Path(name).suffix.lower().lstrip(".")
-            infos.append({
-                "name": name,
-                "size": size,
-                "chunks": len(chunks),
-                "pages": pages,
-                "type": suffix,
-            })
+        with self._lock:
+            for name, chunks in self._chunks.items():
+                path = self.lib_dir / name
+                size = path.stat().st_size if path.exists() else 0
+                pages_set = {c.page for c in chunks if c.page is not None}
+                pages = max(pages_set) if pages_set else None
+                suffix = Path(name).suffix.lower().lstrip(".")
+                infos.append({
+                    "name": name,
+                    "size": size,
+                    "chunks": len(chunks),
+                    "pages": pages,
+                    "type": suffix,
+                })
         return infos
 
+    def evict_pipeline(self) -> None:
+        """Drop in-memory pipeline to enforce LRU cache budget."""
+        with self._lock:
+            self._pipeline = None
+            self.ready = False
+            logger.info("[%s] Pipeline evicted from memory (LRU cap)", self.user_id)
+
+
+class LibraryRegistry:
+    """Registry managing lazy UserLibrary instances and at most 5 active pipelines."""
+
+    def __init__(self, reranker: Reranker) -> None:
+        self._reranker = reranker
+        self._lock = threading.Lock()
+        self._libraries: dict[str, UserLibrary] = {}
+        self._active_lru: OrderedDict[str, None] = OrderedDict()
+
+    def get_library(self, user_id: str) -> UserLibrary:
+        with self._lock:
+            if user_id not in self._libraries:
+                lib = UserLibrary(user_id, self._reranker)
+                lib.scan()
+                lib.try_build()
+                self._libraries[user_id] = lib
+            lib = self._libraries[user_id]
+
+            if not lib._scanned:
+                lib.scan()
+                lib.try_build()
+
+            if lib.ready and lib._pipeline is not None:
+                self._touch_lru(user_id)
+
+            return lib
+
+    def _touch_lru(self, user_id: str) -> None:
+        if user_id in self._active_lru:
+            self._active_lru.move_to_end(user_id)
+        else:
+            self._active_lru[user_id] = None
+
+        while len(self._active_lru) > MAX_ACTIVE_PIPELINES:
+            evicted_uid, _ = self._active_lru.popitem(last=False)
+            if evicted_uid != user_id and evicted_uid in self._libraries:
+                self._libraries[evicted_uid].evict_pipeline()
+
+    def record_active(self, user_id: str) -> None:
+        with self._lock:
+            self._touch_lru(user_id)
+
+    def reset(self) -> None:
+        with self._lock:
+            for lib in self._libraries.values():
+                lib.evict_pipeline()
+            self._libraries.clear()
+            self._active_lru.clear()
+
+
+# Module-level shared reranker and registry
+_shared_reranker: Reranker = Reranker(config.RERANK_MODEL)
+registry: LibraryRegistry = LibraryRegistry(_shared_reranker)
+
+def get_library(user_id: str) -> UserLibrary:
+    return registry.get_library(user_id)
+
+
+_default_user_id: str = "default_test_user"
+
+class _LegacyStoreProxy:
+    """Backward compatibility shim for tests/code accessing server.store."""
+
+    @property
+    def _default_lib(self) -> UserLibrary:
+        return registry.get_library(_default_user_id)
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._default_lib, name)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name == "_default_lib":
+            super().__setattr__(name, value)
+        else:
+            setattr(self._default_lib, name, value)
+
+
+store = _LegacyStoreProxy()
+
 
 # ---------------------------------------------------------------------------
-# Module-level singleton
-# ---------------------------------------------------------------------------
-store = DocumentStore()
-
-
-# ---------------------------------------------------------------------------
-# Pydantic models
+# Request schemas
 # ---------------------------------------------------------------------------
 
 class HistoryItem(BaseModel):
-    """A single turn in the conversation history."""
-
     role: Literal["user", "assistant"]
     content: str
 
 
 class ChatRequest(BaseModel):
-    """Request body for POST /api/chat."""
-
-    question: str = Field(..., min_length=1, max_length=2000)
-    history: list[HistoryItem] = Field(default_factory=list, max_length=20)
-    mode: str = Field("balanced")
+    question: str = Field(..., min_length=1, description="User question")
+    mode: str = Field(
+        default="balanced",
+        description="Retrieval mode: fast, balanced, thorough",
+    )
+    history: list[HistoryItem] = Field(
+        default_factory=list,
+        description="Prior conversation turns for multi-turn coreference resolution",
+    )
 
     @field_validator("mode")
     @classmethod
@@ -275,23 +349,20 @@ class ChatRequest(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Lifespan (startup) — must be defined before app creation
+# Lifespan
 # ---------------------------------------------------------------------------
 
 @asynccontextmanager
 async def _lifespan(app: FastAPI):  # type: ignore[type-arg]
-    """Scan library dir, try to build the pipeline, and warm up models."""
+    """Initialize DB and warm up models. Does not scan all user libraries at startup."""
     auth.init_auth_db()
-    store.scan()
-    store.try_build()
 
-    # Pre-load reranker weights in background after first successful build
-    if store.ready:
-        threading.Thread(
-            target=store._reranker.load,
-            daemon=True,
-            name="reranker-preload",
-        ).start()
+    # Pre-load shared reranker weights in background
+    threading.Thread(
+        target=_shared_reranker.load,
+        daemon=True,
+        name="reranker-preload",
+    ).start()
 
     # Warm up LLM in background
     threading.Thread(
@@ -300,7 +371,7 @@ async def _lifespan(app: FastAPI):  # type: ignore[type-arg]
         name="llm-warmup",
     ).start()
 
-    yield  # application runs
+    yield
 
 
 # ---------------------------------------------------------------------------
@@ -311,10 +382,11 @@ app = FastAPI(
     title="Chat With Your Docs API",
     description=(
         "Local RAG backend – upload documents and chat with them. "
-        "All inference runs locally via Ollama."
+        "All inference runs locally via Ollama with per-user data isolation."
     ),
-    version="0.5.0",
+    version="1.0.0",
     lifespan=_lifespan,
+    swagger_ui_parameters={"persistAuthorization": True},
 )
 
 # CORS
@@ -333,13 +405,16 @@ app.add_middleware(
     allow_credentials=True,
 )
 
+# Include Auth Router
+app.include_router(auth.router)
+
 
 # ---------------------------------------------------------------------------
 # State helper
 # ---------------------------------------------------------------------------
 
-def _state_dict() -> dict[str, Any]:
-    """Build the full API state payload."""
+def _state_dict(lib: UserLibrary) -> dict[str, Any]:
+    """Build the full API state payload for a specific user's library."""
     cfg = PipelineConfig()
     has_samples = False
     notes_dir = Path(config.NOTES_DIR)
@@ -349,9 +424,9 @@ def _state_dict() -> dict[str, Any]:
             for p in notes_dir.iterdir()
         )
     return {
-        "files": store.file_infos(),
-        "ready": store.ready,
-        "error": store.error,
+        "files": lib.file_infos(),
+        "ready": lib.ready,
+        "error": lib.error,
         "pipeline": cfg.label(),
         "modes": _MODES,
         "models": {
@@ -364,7 +439,7 @@ def _state_dict() -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
-# Routes
+# Public Routes
 # ---------------------------------------------------------------------------
 
 @app.get("/", summary="API root")
@@ -377,80 +452,27 @@ def root() -> dict[str, str]:
     }
 
 
+# ---------------------------------------------------------------------------
+# Authenticated Routes (Per-User Data Isolation)
+# ---------------------------------------------------------------------------
+
 @app.get("/api/state", summary="Library & pipeline state")
-def api_state() -> dict[str, Any]:
-    """Return current library files, pipeline readiness, and model info."""
-    return _state_dict()
-
-
-# ---------------------------------------------------------------------------
-# Auth routes
-# ---------------------------------------------------------------------------
-
-@app.post("/api/auth/login", summary="Log in with email and password")
-def api_login(req: auth.LoginRequest) -> dict[str, Any]:
-    user = auth.authenticate_user(req.email, req.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password.",
-        )
-    token = auth.create_token(user["id"], user["email"], user["role"])
-    return {"token": token, "user": user}
-
-
-@app.post("/api/auth/register", summary="Register a new student account")
-def api_register(req: auth.RegisterRequest) -> dict[str, Any]:
-    conn = auth._get_db()
-    cur = conn.cursor()
-    cur.execute("SELECT id FROM users WHERE email = ?", (req.email.strip().lower(),))
-    if cur.fetchone():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="An account with this email already exists.",
-        )
-    user = auth.create_user(req.name, req.email, req.password, req.role)
-    token = auth.create_token(user["id"], user["email"], user["role"])
-    return {"token": token, "user": user}
-
-
-@app.get("/api/auth/me", summary="Get profile of current authenticated user")
-async def api_me(user: dict[str, Any] = Depends(auth.get_current_user)) -> dict[str, Any]:
-    return {"user": user}
-
-
-@app.get("/api/auth/demo-users", summary="Get demo user credentials for instant login")
-def api_demo_users() -> dict[str, Any]:
-    return {
-        "users": [
-            {
-                "name": "Prof. Sarah (Admin)",
-                "email": "admin@doctalk.com",
-                "password": "admin123",
-                "role": "admin",
-                "description": "Full access to upload, remove documents, and view deep RAG traces.",
-            },
-            {
-                "name": "Alex Student",
-                "email": "student@doctalk.com",
-                "password": "student123",
-                "role": "student",
-                "description": "Distraction-free study portal: ask questions with clean source citations.",
-            },
-        ]
-    }
+def api_state(user: dict[str, Any] = Depends(auth.get_current_user)) -> dict[str, Any]:
+    """Return user's library files, pipeline readiness, and model info."""
+    lib = registry.get_library(user["id"])
+    return _state_dict(lib)
 
 
 @app.post("/api/upload", summary="Upload one or more documents")
 async def api_upload(
     files: list[UploadFile] = File(...),
-    _admin: dict[str, Any] = Depends(auth.require_admin),
+    user: dict[str, Any] = Depends(auth.get_current_user),
 ) -> dict[str, Any]:
     """Accept .pdf .docx .md .txt files (max 50 MB each).
 
-    De-duplicates by filename (same name replaces old file). Rejects unsupported
-    types and scanned (image-only) PDFs. Returns per-file results plus full state.
+    Operates strictly within the authenticated user's private library.
     """
+    lib = registry.get_library(user["id"])
     results: list[dict[str, Any]] = []
     any_success = False
 
@@ -458,7 +480,6 @@ async def api_upload(
         raw_name = uf.filename or "upload"
         safe_name = _sanitise(raw_name)
 
-        # Check extension before reading bytes
         suffix = Path(safe_name).suffix.lower()
         if suffix not in _ACCEPT_SUFFIXES:
             results.append({
@@ -472,22 +493,18 @@ async def api_upload(
             })
             continue
 
-        # Read and size-check
         data = await uf.read()
         if len(data) > _MAX_FILE_BYTES:
             results.append({
                 "name": safe_name,
                 "ok": False,
                 "chunks": 0,
-                "error": (
-                    f"File exceeds the {_MAX_FILE_BYTES // (1024 * 1024)} MB limit."
-                ),
+                "error": f"File exceeds the {_MAX_FILE_BYTES // (1024 * 1024)} MB limit.",
             })
             continue
 
-        # Parse (may raise ValueError for scanned PDFs)
         try:
-            chunks = store.add(safe_name, data)
+            chunks = lib.add(safe_name, data)
             results.append({
                 "name": safe_name,
                 "ok": True,
@@ -495,10 +512,9 @@ async def api_upload(
                 "error": None,
             })
             any_success = True
-            logger.info("Uploaded %s – %d chunks", safe_name, len(chunks))
+            logger.info("[%s] Uploaded %s – %d chunks", user["id"], safe_name, len(chunks))
         except ValueError as exc:
-            # Scanned / empty PDF or unsupported format from ingest
-            store.remove(safe_name)  # clean up any partial disk write
+            lib.remove(safe_name)
             results.append({
                 "name": safe_name,
                 "ok": False,
@@ -506,8 +522,8 @@ async def api_upload(
                 "error": str(exc),
             })
         except Exception:
-            store.remove(safe_name)
-            logger.exception("Unexpected error ingesting %s", safe_name)
+            lib.remove(safe_name)
+            logger.exception("[%s] Unexpected error ingesting %s", user["id"], safe_name)
             results.append({
                 "name": safe_name,
                 "ok": False,
@@ -515,70 +531,111 @@ async def api_upload(
                 "error": "Internal error during ingestion.",
             })
 
-    # Re-index once after the whole batch
     if any_success:
-        store.try_build()
+        lib.try_build()
+        registry.record_active(user["id"])
 
-    return {"results": results, **_state_dict()}
+    return {"results": results, **_state_dict(lib)}
 
 
 @app.delete("/api/files/{name}", summary="Delete a single uploaded file")
 def api_delete_file(
     name: str,
-    _admin: dict[str, Any] = Depends(auth.require_admin),
+    user: dict[str, Any] = Depends(auth.get_current_user),
 ) -> dict[str, Any]:
-    """Remove one file by name. Returns 404 for unknown names or path tricks."""
-    # Reject any path tricks
-    known_names = {f["name"] for f in store.file_infos()}
+    """Remove one file by name from current user's library.
+
+    Returns 404 for unknown names or files belonging to other users.
+    """
+    lib = registry.get_library(user["id"])
+    known_names = {f["name"] for f in lib.file_infos()}
     if name != _sanitise(name) or name not in known_names:
         raise HTTPException(status_code=404, detail=f"File '{name}' not found.")
-    store.remove(name)
-    store.try_build()
-    return _state_dict()
+    lib.remove(name)
+    lib.try_build()
+    registry.record_active(user["id"])
+    return _state_dict(lib)
 
 
 @app.delete("/api/files", summary="Delete all uploaded files")
 def api_delete_all(
-    _admin: dict[str, Any] = Depends(auth.require_admin),
+    user: dict[str, Any] = Depends(auth.get_current_user),
 ) -> dict[str, Any]:
-    """Remove every uploaded file and reset the pipeline."""
-    store.clear()
-    store.try_build()
-    return _state_dict()
+    """Remove every uploaded file from current user's library and reset pipeline."""
+    lib = registry.get_library(user["id"])
+    lib.clear()
+    lib.try_build()
+    registry.record_active(user["id"])
+    return _state_dict(lib)
 
 
 @app.post("/api/samples", summary="Load built-in sample lecture notes")
 def api_samples(
-    _admin: dict[str, Any] = Depends(auth.require_admin),
+    user: dict[str, Any] = Depends(auth.get_current_user),
 ) -> dict[str, Any]:
-    """Copy data/notes/*.md into the library and index them."""
+    """Copy data/notes/*.md into current user's library and index them."""
     notes_dir = Path(config.NOTES_DIR)
     if not notes_dir.is_dir():
-        raise HTTPException(
-            status_code=404, detail="Sample notes directory not found."
-        )
+        raise HTTPException(status_code=404, detail="Sample notes directory not found.")
 
-    lib = Path(config.LIBRARY_DIR)
-    lib.mkdir(parents=True, exist_ok=True)
+    lib = registry.get_library(user["id"])
+    lib.lib_dir.mkdir(parents=True, exist_ok=True)
 
     copied = 0
     for src in sorted(notes_dir.iterdir()):
         if not src.is_file() or src.suffix.lower() not in SUPPORTED:
             continue
-        dest = lib / src.name
+        dest = lib.lib_dir / src.name
         shutil.copy2(src, dest)
         try:
-            store._chunks[src.name] = load_document(dest)
+            chunks = load_document(dest)
+            with lib._lock:
+                lib._chunks[src.name] = chunks
             copied += 1
         except Exception as exc:
-            logger.warning("Skipping sample %s: %s", src.name, exc)
+            logger.warning("[%s] Skipping sample %s: %s", user["id"], src.name, exc)
+            if dest.exists():
+                dest.unlink()
 
     if copied:
-        store.try_build()
+        lib.try_build()
+        registry.record_active(user["id"])
     else:
-        logger.warning("No sample notes were loaded from %s", notes_dir)
+        logger.warning("[%s] No sample notes were loaded from %s", user["id"], notes_dir)
 
-    return _state_dict()
+    return _state_dict(lib)
+
+
+# ---------------------------------------------------------------------------
+# Admin Routes
+# ---------------------------------------------------------------------------
+
+@app.get("/api/admin/users", summary="List all registered users (admin only)")
+def api_admin_users(
+    admin: dict[str, Any] = Depends(auth.require_admin),
+) -> list[dict[str, Any]]:
+    """Return all users with file counts. Never exposes password_hash."""
+    conn = auth.get_db()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, name, email, role, created_at, last_login FROM users ORDER BY created_at ASC"
+        )
+        users = [dict(r) for r in cur.fetchall()]
+    finally:
+        conn.close()
+
+    lib_root = Path(config.LIBRARY_DIR)
+    for u in users:
+        user_dir = lib_root / u["id"]
+        if user_dir.is_dir():
+            u["file_count"] = sum(
+                1 for p in user_dir.iterdir() if p.is_file() and p.suffix.lower() in SUPPORTED
+            )
+        else:
+            u["file_count"] = 0
+
+    return users
 
 
 # ---------------------------------------------------------------------------
@@ -616,7 +673,7 @@ def _tokenize_terms(query: str) -> list[str]:
     return result
 
 
-_SENTINEL = object()  # signals worker finished
+_SENTINEL = object()
 
 
 def _run_pipeline_worker(
@@ -660,12 +717,7 @@ async def _chat_stream(
     question: str,
     history: list[dict[str, str]],
 ) -> AsyncGenerator[bytes, None]:
-    """Async NDJSON generator bridging the blocking pipeline worker thread.
-
-    Guarantees: sources event is emitted BEFORE any token event.
-    Token events are buffered until the sources event can be sent.
-    """
-
+    """Async NDJSON generator bridging the blocking pipeline worker thread."""
     evt_queue: "queue.Queue[Any]" = queue.Queue()
     stop_event = threading.Event()
 
@@ -679,11 +731,9 @@ async def _chat_stream(
     sources_sent = False
     result: Result | None = None
     trace_snap: dict[str, Any] = {}
-    # Buffer token events until sources have been emitted
     pending_tokens: list[bytes] = []
 
     def _emit_sources(tr: dict[str, Any]) -> bytes:
-        """Build and return the sources NDJSON line."""
         by_id = {c.id: c for c in pipeline.chunks}
         retrieved_ids: list[str] = tr.get("retrieved", [])
         sources_objs = [
@@ -699,81 +749,53 @@ async def _chat_stream(
 
     try:
         while True:
-            # Drain queue with a small timeout so we stay responsive
             try:
-                item = evt_queue.get(timeout=0.05)
+                item = evt_queue.get_nowait()
             except queue.Empty:
-                await asyncio.sleep(0)
+                await asyncio.sleep(0.01)
                 continue
 
             if item is _SENTINEL:
                 break
 
-            if isinstance(item, dict):
-                kind = item.get("type")
+            itype = item.get("type")
 
-                if kind == "trace":
-                    trace_snap = item.get("trace", {})
-                    # Emit sources once 'used' list appears in the trace
-                    # (set by pipeline just before it calls on_token for generation)
-                    if not sources_sent and "used" in trace_snap:
-                        sources_sent = True
-                        yield _emit_sources(trace_snap)
-                        # Flush any buffered tokens now
-                        for tok_bytes in pending_tokens:
-                            yield tok_bytes
-                        pending_tokens.clear()
-                    yield (
-                        json.dumps({
-                            "type": "trace",
-                            "status": item["status"],
-                            "trace": trace_snap,
-                        }) + "\n"
-                    ).encode()
+            if itype == "trace":
+                trace_snap = item["trace"]
+                yield (json.dumps(item) + "\n").encode()
 
-                elif kind == "token":
-                    tok_bytes = (
-                        json.dumps({"type": "token", "text": item["text"]}) + "\n"
-                    ).encode()
-                    if sources_sent:
-                        yield tok_bytes
-                    else:
-                        # Buffer until sources are sent
-                        pending_tokens.append(tok_bytes)
+                if not sources_sent and trace_snap.get("retrieved") is not None:
+                    sources_sent = True
+                    yield _emit_sources(trace_snap)
+                    for pt in pending_tokens:
+                        yield pt
+                    pending_tokens.clear()
 
-                elif kind == "reset":
-                    pending_tokens.clear()  # discard buffered draft tokens too
-                    yield (json.dumps({"type": "reset"}) + "\n").encode()
+            elif itype == "token":
+                line = (json.dumps(item) + "\n").encode()
+                if sources_sent:
+                    yield line
+                else:
+                    pending_tokens.append(line)
 
-                elif kind == "_result":
-                    result = item["result"]
+            elif itype == "reset":
+                line = (json.dumps(item) + "\n").encode()
+                if sources_sent:
+                    yield line
+                else:
+                    pending_tokens.clear()
 
-                elif kind == "error":
-                    msg = item.get("message", "Unknown error")
-                    if "connect" in msg.lower() or "connection" in msg.lower():
-                        msg = (
-                            f"Ollama is not reachable at {config.OLLAMA_HOST}. "
-                            "Start Ollama and retry."
-                        )
-                    yield (
-                        json.dumps({"type": "error", "message": msg}) + "\n"
-                    ).encode()
-                    return
+            elif itype == "error":
+                yield (json.dumps(item) + "\n").encode()
 
-            await asyncio.sleep(0)  # yield control between events
+            elif itype == "_result":
+                result = item["result"]
 
-        # Emit sources if they weren't emitted yet (e.g. no-retrieval path)
-        if not sources_sent and result is not None:
-            sources_sent = True
-            yield _emit_sources(result.trace)
-            # Flush buffered tokens that arrived before sources
-            for tok_bytes in pending_tokens:
-                yield tok_bytes
-            pending_tokens.clear()
-        elif pending_tokens:
-            # sources already sent but tokens were somehow still buffered: flush them
-            for tok_bytes in pending_tokens:
-                yield tok_bytes
+        if not sources_sent:
+            tr = result.trace if result else trace_snap
+            yield _emit_sources(tr)
+            for pt in pending_tokens:
+                yield pt
             pending_tokens.clear()
 
         if result is not None:
@@ -797,7 +819,6 @@ async def _chat_stream(
             yield (json.dumps(done_evt) + "\n").encode()
 
     except asyncio.CancelledError:
-        # Client disconnected – stop the worker cleanly
         stop_event.set()
         raise
     finally:
@@ -805,20 +826,25 @@ async def _chat_stream(
 
 
 @app.post("/api/chat", summary="Stream a RAG answer as NDJSON")
-async def api_chat(req: ChatRequest) -> StreamingResponse:
-    """Stream NDJSON events: trace → sources → token… → done.
-
-    Returns 409 if no pipeline is ready, 422 for invalid mode.
-    """
-    if not store.ready:
-        error_msg = store.error or "No documents have been uploaded yet."
+async def api_chat(
+    req: ChatRequest,
+    user: dict[str, Any] = Depends(auth.get_current_user),
+) -> StreamingResponse:
+    """Stream NDJSON events for the current user's library and index."""
+    lib = registry.get_library(user["id"])
+    if not lib.ready:
+        if lib.file_infos():
+            lib.try_build()
+    if not lib.ready:
+        error_msg = lib.error or "No documents have been uploaded yet."
         raise HTTPException(status_code=409, detail=error_msg)
 
     try:
-        pipeline = store.pipeline_for(req.mode)
+        pipeline = lib.pipeline_for(req.mode)
     except RuntimeError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
 
+    registry.record_active(user["id"])
     history_dicts = [item.model_dump() for item in req.history]
 
     return StreamingResponse(

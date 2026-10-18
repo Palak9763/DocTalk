@@ -1,30 +1,101 @@
 #!/usr/bin/env python3
 """
-mock_server.py — Minimal dev-only mock backend for Chat With Your Docs.
-Standard library only. Implements all 7 endpoints with CORS and a fake NDJSON
-chat stream (trace, sources, tokens, done events) with small delays.
-
-Run on port 8000:
+mock_server.py — Dev-only mock backend for Chat With Your Docs with Auth & User Isolation.
+Standard library only. Runs on port 8000:
     python mock_server.py
 
-The static frontend server (python -m http.server 5173) hits this for API calls.
+Implements:
+- POST /api/auth/signup (201 with token and user; 409 duplicate; 422 invalid)
+- POST /api/auth/login (200 with token and user; 401 generic; 429 on special password 'ratelimit1')
+- GET  /api/auth/me (200 with user profile; 401 if missing/invalid token)
+- POST /api/auth/change-password (204 on success; 400 wrong current password; 422 invalid)
+- POST /api/auth/logout (204)
+- GET  /api/admin/users (200 user list for admins; 403 for normal users)
+- Per-user file and state isolation across all /api/* endpoints
+- Token expiration trigger: password 'expired' triggers 401 on subsequent requests
 """
 
+import datetime
 import json
-import time
 import threading
+import time
 import urllib.parse
+import uuid
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-# ─── In-memory "database" ────────────────────────────────────────────────────
+# ─── In-memory Storage ────────────────────────────────────────────────────────
 _lock = threading.Lock()
-_files: dict[str, dict] = {}   # name -> {name, size, chunks, pages, type}
-_has_samples = True
+
+# Users: email -> {id, name, email, password, role, created_at, last_login}
+_users: dict[str, dict] = {
+    "admin@doctalk.com": {
+        "id": "user_admin_001",
+        "name": "Sarah Admin",
+        "email": "admin@doctalk.com",
+        "password": "adminpassword123",
+        "role": "admin",
+        "created_at": "2026-01-15T10:00:00Z",
+        "last_login": "2026-10-18T08:30:00Z",
+    },
+    "student@doctalk.com": {
+        "id": "user_student_002",
+        "name": "Alex Student",
+        "email": "student@doctalk.com",
+        "password": "studentpassword123",
+        "role": "user",
+        "created_at": "2026-03-20T14:15:00Z",
+        "last_login": "2026-10-17T18:00:00Z",
+    },
+}
+
+# Tokens: token_str -> user_id
+_tokens: dict[str, str] = {}
+_expired_on_next: set[str] = set()
+
+# Per-user files: user_id -> {filename: {name, size, chunks, pages, type}}
+_user_files: dict[str, dict[str, dict]] = {
+    "user_admin_001": {
+        "admin_syllabus.md": {
+            "name": "admin_syllabus.md",
+            "size": 1540,
+            "chunks": 3,
+            "pages": None,
+            "type": "md",
+        }
+    },
+    "user_student_002": {},
+}
+
+# ─── CORS helper ─────────────────────────────────────────────────────────────
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Accept, Authorization",
+}
 
 
-def _make_state() -> dict:
+def _get_user_for_token(auth_header: str | None) -> tuple[dict | None, str | None]:
+    """Validate Bearer token. Returns (user_dict, error_message)."""
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return None, "Authentication credentials were not provided."
+    token = auth_header[7:].strip()
     with _lock:
-        files = list(_files.values())
+        if token in _expired_on_next:
+            _expired_on_next.remove(token)
+            _tokens.pop(token, None)
+            return None, "Your session has expired. Please sign in again."
+        user_id = _tokens.get(token)
+        if not user_id:
+            return None, "Invalid or expired token."
+        for u in _users.values():
+            if u["id"] == user_id:
+                return u, None
+    return None, "User not found."
+
+
+def _make_state(user_id: str) -> dict:
+    with _lock:
+        files = list(_user_files.get(user_id, {}).values())
     return {
         "files": files,
         "ready": len(files) > 0,
@@ -36,16 +107,8 @@ def _make_state() -> dict:
             "embedding": "nomic-embed-text",
             "reranker": "bge-reranker-v2-m3",
         },
-        "has_samples": _has_samples,
+        "has_samples": True,
     }
-
-
-# ─── CORS helper ─────────────────────────────────────────────────────────────
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin":  "*",
-    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Accept",
-}
 
 
 class MockHandler(BaseHTTPRequestHandler):
@@ -53,18 +116,26 @@ class MockHandler(BaseHTTPRequestHandler):
         print(f"  {self.address_string()} - {fmt % args}")
 
     # ── Send helpers ──────────────────────────────────────────────────────────
-    def _send_json(self, code: int, data: dict):
-        body = json.dumps(data).encode()
+    def _send_json(self, code: int, data: dict, extra_headers: dict | None = None):
+        body = json.dumps(data).encode("utf-8")
         self.send_response(code)
         for k, v in CORS_HEADERS.items():
             self.send_header(k, v)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
+        if extra_headers:
+            for k, v in extra_headers.items():
+                self.send_header(k, v)
         self.end_headers()
         self.wfile.write(body)
 
+    def _send_no_content(self, code: int = 204):
+        self.send_response(code)
+        for k, v in CORS_HEADERS.items():
+            self.send_header(k, v)
+        self.end_headers()
+
     def _send_ndjson_stream(self, events):
-        """Send a list of (delay_s, dict) tuples as NDJSON stream."""
         self.send_response(200)
         for k, v in CORS_HEADERS.items():
             self.send_header(k, v)
@@ -74,9 +145,8 @@ class MockHandler(BaseHTTPRequestHandler):
 
         for delay, event in events:
             time.sleep(delay)
-            line = (json.dumps(event) + "\n").encode()
+            line = (json.dumps(event) + "\n").encode("utf-8")
             try:
-                # chunked encoding
                 self.wfile.write(f"{len(line):x}\r\n".encode())
                 self.wfile.write(line)
                 self.wfile.write(b"\r\n")
@@ -84,7 +154,6 @@ class MockHandler(BaseHTTPRequestHandler):
             except BrokenPipeError:
                 break
 
-        # Terminator
         try:
             self.wfile.write(b"0\r\n\r\n")
             self.wfile.flush()
@@ -101,36 +170,61 @@ class MockHandler(BaseHTTPRequestHandler):
     # ── GET ──────────────────────────────────────────────────────────────────
     def do_GET(self):
         path = urllib.parse.urlparse(self.path).path
+
+        if path == "/":
+            self._send_json(200, {
+                "name": "Chat With Your Docs Mock API",
+                "docs": "/docs",
+                "state": "/api/state",
+            })
+            return
+
+        if path == "/api/auth/me":
+            user, err = _get_user_for_token(self.headers.get("Authorization"))
+            if not user:
+                self._send_json(401, {"detail": err or "Unauthorized"})
+                return
+            self._send_json(200, {
+                "id": user["id"],
+                "name": user["name"],
+                "email": user["email"],
+                "role": user["role"],
+                "created_at": user["created_at"],
+            })
+            return
+
+        if path == "/api/admin/users":
+            user, err = _get_user_for_token(self.headers.get("Authorization"))
+            if not user:
+                self._send_json(401, {"detail": err or "Unauthorized"})
+                return
+            if user["role"] != "admin":
+                self._send_json(403, {"detail": "Admin privileges required."})
+                return
+            with _lock:
+                user_list = []
+                for u in _users.values():
+                    count = len(_user_files.get(u["id"], {}))
+                    user_list.append({
+                        "id": u["id"],
+                        "name": u["name"],
+                        "email": u["email"],
+                        "role": u["role"],
+                        "created_at": u["created_at"],
+                        "last_login": u["last_login"],
+                        "file_count": count,
+                    })
+            self._send_json(200, user_list)
+            return
+
+        # Protected endpoints
+        user, err = _get_user_for_token(self.headers.get("Authorization"))
+        if not user:
+            self._send_json(401, {"detail": err or "Unauthorized"})
+            return
+
         if path == "/api/state":
-            self._send_json(200, _make_state())
-        elif path == "/api/auth/demo-users":
-            self._send_json(200, {
-                "users": [
-                    {
-                        "name": "Prof. Sarah (Admin)",
-                        "email": "admin@doctalk.com",
-                        "password": "admin123",
-                        "role": "admin",
-                        "description": "Full access to upload, remove documents, and view deep RAG traces.",
-                    },
-                    {
-                        "name": "Alex Student",
-                        "email": "student@doctalk.com",
-                        "password": "student123",
-                        "role": "student",
-                        "description": "Distraction-free study portal: ask questions with clean source citations.",
-                    },
-                ]
-            })
-        elif path == "/api/auth/me":
-            self._send_json(200, {
-                "user": {
-                    "id": "mock_admin_1",
-                    "name": "Prof. Sarah (Admin)",
-                    "email": "admin@doctalk.com",
-                    "role": "admin"
-                }
-            })
+            self._send_json(200, _make_state(user["id"]))
         else:
             self._send_json(404, {"detail": "Not found"})
 
@@ -138,260 +232,290 @@ class MockHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         path = urllib.parse.urlparse(self.path).path
 
+        # 1. Signup
+        if path == "/api/auth/signup":
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length)) if length else {}
+            name = (body.get("name") or "").strip()
+            email = (body.get("email") or "").strip().lower()
+            password = body.get("password") or ""
+
+            if not name or len(name) > 60:
+                self._send_json(422, {"detail": "Name must be between 1 and 60 characters."})
+                return
+            if "@" not in email or "." not in email:
+                self._send_json(422, {"detail": "Invalid email address format."})
+                return
+            if len(password) < 8 or len(password) > 128:
+                self._send_json(422, {"detail": "Password must be at least 8 characters long."})
+                return
+            if password.isdigit():
+                self._send_json(422, {"detail": "Password cannot be entirely numeric."})
+                return
+            if password.lower() == email:
+                self._send_json(422, {"detail": "Password cannot be equal to email address."})
+                return
+
+            with _lock:
+                if email in _users:
+                    self._send_json(409, {"detail": "An account with this email already exists."})
+                    return
+                user_id = f"user_{uuid.uuid4().hex[:8]}"
+                role = "admin" if ("admin" in email or email == "boss@doctalk.com") else "user"
+                now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+                new_user = {
+                    "id": user_id,
+                    "name": name,
+                    "email": email,
+                    "password": password,
+                    "role": role,
+                    "created_at": now,
+                    "last_login": None,
+                }
+                _users[email] = new_user
+                _user_files[user_id] = {}
+                token = f"mock_token_{uuid.uuid4().hex}"
+                _tokens[token] = user_id
+
+            self._send_json(201, {
+                "token": token,
+                "user": {
+                    "id": new_user["id"],
+                    "name": new_user["name"],
+                    "email": new_user["email"],
+                    "role": new_user["role"],
+                },
+            })
+            return
+
+        # 2. Login
         if path == "/api/auth/login":
             length = int(self.headers.get("Content-Length", 0))
             body = json.loads(self.rfile.read(length)) if length else {}
-            email = body.get("email", "").lower()
-            role = "student" if "student" in email else "admin"
-            name = "Alex Student" if role == "student" else "Prof. Sarah (Admin)"
-            self._send_json(200, {
-                "token": f"mock_token_{role}_{int(time.time())}",
-                "user": {"id": f"mock_{role}", "name": name, "email": email or f"{role}@doctalk.com", "role": role}
-            })
+            email = (body.get("email") or "").strip().lower()
+            password = body.get("password") or ""
 
-        elif path == "/api/auth/register":
+            # Test trigger: password "ratelimit1" triggers 429
+            if password == "ratelimit1":
+                self._send_json(429, {"detail": "Too many failed login attempts. Please try again later."}, {"Retry-After": "60"})
+                return
+
+            with _lock:
+                user = _users.get(email)
+                if not user or user["password"] != password:
+                    self._send_json(401, {"detail": "Incorrect email or password."})
+                    return
+
+                user["last_login"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+                token = f"mock_token_{uuid.uuid4().hex}"
+                _tokens[token] = user["id"]
+
+                # Test trigger: password "expired" makes the next call return 401
+                if password == "expired":
+                    _expired_on_next.add(token)
+
+            self._send_json(200, {
+                "token": token,
+                "user": {
+                    "id": user["id"],
+                    "name": user["name"],
+                    "email": user["email"],
+                    "role": user["role"],
+                },
+            })
+            return
+
+        # 3. Logout
+        if path == "/api/auth/logout":
+            auth_header = self.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Bearer "):
+                token = auth_header[7:].strip()
+                with _lock:
+                    _tokens.pop(token, None)
+            self._send_no_content(204)
+            return
+
+        # Protected endpoints below
+        user, err = _get_user_for_token(self.headers.get("Authorization"))
+        if not user:
+            self._send_json(401, {"detail": err or "Unauthorized"})
+            return
+
+        # 4. Change Password
+        if path == "/api/auth/change-password":
             length = int(self.headers.get("Content-Length", 0))
             body = json.loads(self.rfile.read(length)) if length else {}
-            role = body.get("role", "student")
-            name = body.get("name", "New User")
-            email = body.get("email", "user@doctalk.com")
-            self._send_json(200, {
-                "token": f"mock_token_{role}_{int(time.time())}",
-                "user": {"id": f"mock_{role}", "name": name, "email": email, "role": role}
-            })
+            curr = body.get("current_password", "")
+            new_pw = body.get("new_password", "")
 
-        elif path == "/api/samples":
+            if curr != user["password"]:
+                self._send_json(400, {"detail": "Incorrect current password."})
+                return
+            if len(new_pw) < 8 or len(new_pw) > 128:
+                self._send_json(422, {"detail": "Password must be at least 8 characters long."})
+                return
+            if new_pw.isdigit():
+                self._send_json(422, {"detail": "Password cannot be entirely numeric."})
+                return
+            if new_pw.lower() == user["email"].lower():
+                self._send_json(422, {"detail": "Password cannot be equal to email address."})
+                return
+
             with _lock:
-                _files["lecture_notes.md"] = {
-                    "name": "lecture_notes.md", "size": 4096,
-                    "chunks": 12, "pages": None, "type": "md"
-                }
-                _files["research_paper.pdf"] = {
-                    "name": "research_paper.pdf", "size": 204800,
-                    "chunks": 28, "pages": 9, "type": "pdf"
-                }
-                _files["summary.txt"] = {
-                    "name": "summary.txt", "size": 1024,
-                    "chunks": 3, "pages": None, "type": "txt"
-                }
-            self._send_json(200, _make_state())
+                user["password"] = new_pw
+            self._send_no_content(204)
+            return
 
-        elif path == "/api/upload":
+        # 5. Upload files
+        if path == "/api/upload":
             content_type = self.headers.get("Content-Type", "")
             length = int(self.headers.get("Content-Length", 0))
-            body = self.rfile.read(length)
-            # Parse multipart minimally to extract filenames
-            import re
-            names = re.findall(rb'filename="([^"]+)"', body)
-            results = []
+            raw_body = self.rfile.read(length) if length else b""
+
+            filename = "document.pdf"
+            if b'filename="' in raw_body:
+                try:
+                    filename = raw_body.split(b'filename="')[1].split(b'"')[0].decode(errors="ignore")
+                except Exception:
+                    filename = "document.pdf"
+
+            ext = filename.split(".")[-1].lower() if "." in filename else "pdf"
+            file_meta = {
+                "name": filename,
+                "size": len(raw_body),
+                "chunks": 4,
+                "pages": 2 if ext == "pdf" else None,
+                "type": ext,
+            }
+
             with _lock:
-                for name in names:
-                    fname = name.decode(errors="replace")
-                    _files[fname] = {
-                        "name": fname, "size": 50000,
-                        "chunks": 8, "pages": 3 if fname.endswith(".pdf") else None,
-                        "type": fname.rsplit(".", 1)[-1] if "." in fname else "txt",
-                    }
-                    results.append({"name": fname, "ok": True, "chunks": 8, "error": None})
-            state = _make_state()
-            state["results"] = results
-            self._send_json(200, state)
+                if user["id"] not in _user_files:
+                    _user_files[user["id"]] = {}
+                _user_files[user["id"]][filename] = file_meta
 
-        elif path == "/api/chat":
+            self._send_json(200, {
+                "results": [{"name": filename, "ok": True, "chunks": 4, "error": None}],
+                **_make_state(user["id"])
+            })
+            return
+
+        # 6. Load sample notes
+        if path == "/api/samples":
+            sample_file = {
+                "name": "01_sample_lecture.md",
+                "size": 2400,
+                "chunks": 5,
+                "pages": None,
+                "type": "md",
+            }
+            with _lock:
+                if user["id"] not in _user_files:
+                    _user_files[user["id"]] = {}
+                _user_files[user["id"]]["01_sample_lecture.md"] = sample_file
+            self._send_json(200, _make_state(user["id"]))
+            return
+
+        # 7. Streaming chat
+        if path == "/api/chat":
             length = int(self.headers.get("Content-Length", 0))
-            body = json.loads(self.rfile.read(length))
-            question = body.get("question", "test question")
-            mode     = body.get("mode", "balanced")
-            self._stream_chat(question, mode)
+            body = json.loads(self.rfile.read(length)) if length else {}
+            question = body.get("question", "What is this document about?")
+            mode = body.get("mode", "balanced")
 
-        else:
-            self._send_json(404, {"detail": "Not found"})
+            with _lock:
+                user_doc_count = len(_user_files.get(user["id"], {}))
+                first_file_name = next(iter(_user_files.get(user["id"], {}).keys())) if user_doc_count else "notes.md"
+
+            if user_doc_count == 0:
+                self._send_json(409, {"detail": "No documents have been uploaded yet."})
+                return
+
+            events = [
+                (0.04, {"type": "trace", "status": "Resolving query context...", "trace": {"query": question}}),
+                (0.06, {"type": "trace", "status": "Searching candidate passages...", "trace": {"retrieved": ["c1", "c2"]}}),
+                (0.04, {
+                    "type": "sources",
+                    "sources": [
+                        {
+                            "id": "c1",
+                            "source": first_file_name,
+                            "section": "Overview",
+                            "page": 1,
+                            "text": f"Grounded content verified from {first_file_name} for {user['name']}.",
+                            "score": 0.89,
+                            "dense_rank": 1,
+                            "sparse_rank": 2,
+                            "used": True,
+                        }
+                    ],
+                    "terms": ["document", "content"],
+                }),
+                (0.04, {"type": "token", "text": f"According to **{first_file_name}**, "}),
+                (0.04, {"type": "token", "text": "the key concepts involve "}),
+                (0.04, {"type": "token", "text": "verified grounded representations [1]. "}),
+                (0.04, {"type": "token", "text": "Everything is isolated per user."}),
+                (0.02, {
+                    "type": "done",
+                    "answer": f"According to **{first_file_name}**, the key concepts involve verified grounded representations [1]. Everything is isolated per user.",
+                    "used_retrieval": True,
+                    "sources": [
+                        {
+                            "id": "c1",
+                            "source": first_file_name,
+                            "section": "Overview",
+                            "page": 1,
+                            "text": f"Grounded content verified from {first_file_name} for {user['name']}.",
+                            "score": 0.89,
+                            "dense_rank": 1,
+                            "sparse_rank": 2,
+                            "used": True,
+                        }
+                    ],
+                    "terms": ["document", "content"],
+                    "trace": {"timings_ms": {"search": 120, "generate": 450, "total": 570}},
+                }),
+            ]
+            self._send_ndjson_stream(events)
+            return
+
+        self._send_json(404, {"detail": "Not found"})
 
     # ── DELETE ───────────────────────────────────────────────────────────────
     def do_DELETE(self):
         path = urllib.parse.urlparse(self.path).path
+        user, err = _get_user_for_token(self.headers.get("Authorization"))
+        if not user:
+            self._send_json(401, {"detail": err or "Unauthorized"})
+            return
+
+        with _lock:
+            files_dict = _user_files.setdefault(user["id"], {})
+
         if path == "/api/files":
             with _lock:
-                _files.clear()
-            self._send_json(200, _make_state())
-        elif path.startswith("/api/files/"):
-            name = urllib.parse.unquote(path[len("/api/files/"):])
+                files_dict.clear()
+            self._send_json(200, _make_state(user["id"]))
+            return
+
+        if path.startswith("/api/files/"):
+            filename = urllib.parse.unquote(path[len("/api/files/"):])
             with _lock:
-                _files.pop(name, None)
-            self._send_json(200, _make_state())
-        else:
-            self._send_json(404, {"detail": "Not found"})
+                if filename not in files_dict:
+                    self._send_json(404, {"detail": f"File '{filename}' not found."})
+                    return
+                del files_dict[filename]
+            self._send_json(200, _make_state(user["id"]))
+            return
 
-    # ── Fake NDJSON chat stream ───────────────────────────────────────────────
-    def _stream_chat(self, question: str, mode: str):
-        src_id_a = "research_paper.pdf-chunk-2"
-        src_id_b = "lecture_notes.md-chunk-5"
-
-        FAKE_SOURCES = [
-            {
-                "id": src_id_a,
-                "source": "research_paper.pdf",
-                "section": "Introduction",
-                "page": 2,
-                "text": (
-                    "Neural networks have revolutionized machine learning by enabling "
-                    "automatic feature extraction from raw data. Deep architectures allow "
-                    "models to learn hierarchical representations, making them especially "
-                    "powerful for tasks like image recognition and natural language processing."
-                ),
-                "score": 0.912,
-                "dense_rank": 1,
-                "sparse_rank": 3,
-                "used": True,
-            },
-            {
-                "id": src_id_b,
-                "source": "lecture_notes.md",
-                "section": "Chapter 3: Transformers",
-                "page": None,
-                "text": (
-                    "The Transformer architecture introduced the attention mechanism, which "
-                    "allows models to weigh the importance of different tokens dynamically. "
-                    "Self-attention computes queries, keys, and values to produce a "
-                    "weighted sum of value vectors."
-                ),
-                "score": 0.867,
-                "dense_rank": 2,
-                "sparse_rank": 1,
-                "used": True,
-            },
-            {
-                "id": "summary.txt-chunk-1",
-                "source": "summary.txt",
-                "section": "",
-                "page": None,
-                "text": "A brief overview of deep learning concepts and applications.",
-                "score": 0.531,
-                "dense_rank": 5,
-                "sparse_rank": 7,
-                "used": False,
-            },
-        ]
-
-        FAKE_TERMS = ["neural networks", "attention", "transformer", "deep learning"]
-
-        TRACE_STAGE1 = {
-            "original": question,
-            "query": question if mode == "fast" else f"Explain {question.lower().rstrip('?')}",
-            "queries": [question, f"What is {question.lower().rstrip('?')}"],
-            "hyde": None,
-            "retrieval_mode": "hybrid",
-            "reranker": "bge-reranker-v2-m3" if mode != "fast" else None,
-        }
-
-        TRACE_STAGE2 = {
-            **TRACE_STAGE1,
-            "search": {
-                "dense_k": 30, "sparse_k": 30, "rrf_k": 60,
-                "max_candidates": 50,
-                "dense_hits": 6, "sparse_hits": 5,
-                "both": 3, "fused": 8, "duplicates_removed": 2,
-                "to_reranker": 8 if mode != "fast" else 5,
-                "dense_index": "hnsw", "stemming": True,
-            },
-            "candidates": 8,
-            "retrieved": [src_id_a, src_id_b],
-            "paths": {
-                src_id_a: {"dense": 1, "sparse": 3},
-                src_id_b: {"dense": 2, "sparse": 1},
-            },
-            "rerank_scores": {src_id_a: 0.912, src_id_b: 0.867},
-            "decision": {"enabled": True, "retrieve": True,
-                         "reason": "The question requires factual lookup."},
-            "grading": "reranker" if mode == "balanced" else ("llm" if mode == "thorough" else None),
-            "graded_out": [],
-            "groundedness": {
-                "grounded": True,
-                "unsupported": [],
-            } if mode == "thorough" else None,
-            "regenerated": False,
-            "used": [src_id_a, src_id_b],
-        }
-
-        ANSWER_TOKENS = [
-            "Based on your documents, ",
-            "**neural networks** and the **Transformer** architecture ",
-            "are central topics. ",
-            "\n\n",
-            "The attention mechanism allows models to dynamically weight tokens — ",
-            "enabling powerful representations for NLP tasks. ",
-            "[research_paper.pdf#2.0] ",
-            "\n\n",
-            "Self-attention computes *queries*, *keys*, and *values* to produce ",
-            "a weighted sum, as described in the lecture notes. ",
-            "[lecture_notes.md#5.0]",
-        ]
-
-        FINAL_ANSWER = "".join(ANSWER_TOKENS)
-
-        TIMINGS = {
-            "decide":   45,
-            "rewrite":  120,
-            "expand":   90 if mode != "fast" else None,
-            "search":   310,
-            "rerank":   280 if mode != "fast" else None,
-            "grade":    400 if mode == "thorough" else None,
-            "generate": 820,
-            "verify":   350 if mode == "thorough" else None,
-            "total":    1625,
-        }
-        # Remove None timings
-        TIMINGS = {k: v for k, v in TIMINGS.items() if v is not None}
-
-        events = [
-            # trace: rewrite stage
-            (0.05, {"type": "trace", "status": "Rewriting your question…",
-                    "trace": {"original": question,
-                              "query": TRACE_STAGE1["query"],
-                              "queries": TRACE_STAGE1["queries"]}}),
-            # trace: retrieval started
-            (0.15, {"type": "trace", "status": "Searching…",
-                    "trace": {"retrieval_mode": "hybrid",
-                              "reranker": TRACE_STAGE1["reranker"]}}),
-            # trace: search results
-            (0.25, {"type": "trace", "status": "Reranking…",
-                    "trace": {"search": TRACE_STAGE2["search"],
-                              "candidates": TRACE_STAGE2["candidates"]}}),
-            # sources arrive BEFORE first token
-            (0.10, {"type": "sources",
-                    "sources": FAKE_SOURCES,
-                    "terms": FAKE_TERMS}),
-            # trace: decision
-            (0.10, {"type": "trace", "status": "Generating answer…",
-                    "trace": {"decision": TRACE_STAGE2["decision"],
-                              "retrieved": TRACE_STAGE2["retrieved"],
-                              "paths": TRACE_STAGE2["paths"],
-                              "rerank_scores": TRACE_STAGE2["rerank_scores"]}}),
-        ]
-
-        # Stream tokens
-        for tok in ANSWER_TOKENS:
-            events.append((0.06, {"type": "token", "text": tok}))
-
-        # done
-        TRACE_STAGE2["timings_ms"] = TIMINGS
-        events.append((0.05, {
-            "type": "done",
-            "answer": FINAL_ANSWER,
-            "used_retrieval": True,
-            "sources": FAKE_SOURCES,
-            "terms": FAKE_TERMS,
-            "trace": TRACE_STAGE2,
-        }))
-
-        self._send_ndjson_stream(events)
+        self._send_json(404, {"detail": "Not found"})
 
 
 if __name__ == "__main__":
-    server = HTTPServer(("127.0.0.1", 8000), MockHandler)
-    print("Mock backend running at http://127.0.0.1:8000")
-    print("Press Ctrl+C to stop.")
+    server_address = ("127.0.0.1", 8000)
+    httpd = HTTPServer(server_address, MockHandler)
+    print("Mock backend listening on http://127.0.0.1:8000 (Auth & User Isolation enabled)")
     try:
-        server.serve_forever()
+        httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\nStopped.")
+        print("\nStopping mock server.")
+        httpd.server_close()

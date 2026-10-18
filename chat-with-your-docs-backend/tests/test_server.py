@@ -101,7 +101,19 @@ def client(tmp_dirs: Path, fake_client: FakeClient, monkeypatch: pytest.MonkeyPa
     """Build a fresh TestClient for each test, with fakes installed."""
     install_fake_reranker()
 
+    import auth
     import server as srv
+
+    db_path = tmp_dirs / "app.db"
+    monkeypatch.setattr(auth, "AUTH_DB_PATH", db_path)
+    auth.init_auth_db(db_path)
+
+    # Create test user and generate Bearer token
+    user = auth.create_user("Test User", "test@example.com", "password123", role="admin", db_path=db_path)
+    token = auth.create_access_token(user["id"], user["role"])
+
+    monkeypatch.setattr(srv, "_default_user_id", user["id"])
+    srv.registry.reset()
 
     # Reset store state for isolation
     monkeypatch.setattr(srv.store, "_chunks", {})
@@ -110,6 +122,7 @@ def client(tmp_dirs: Path, fake_client: FakeClient, monkeypatch: pytest.MonkeyPa
     monkeypatch.setattr(srv.store, "_pipeline", None)
 
     with TestClient(srv.app, raise_server_exceptions=False) as tc:
+        tc.headers["Authorization"] = f"Bearer {token}"
         yield tc
 
     restore_reranker()
