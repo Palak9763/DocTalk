@@ -1465,7 +1465,7 @@
       });
     }
 
-    // ── User Dropdown & Portal Switching ──
+    // ── User Dropdown ──
     const userBtn = document.getElementById('user-btn');
     const userDropdown = document.getElementById('user-dropdown');
     if (userBtn && userDropdown) {
@@ -1475,7 +1475,6 @@
         userDropdown.classList.toggle('open', !open);
         userBtn.setAttribute('aria-expanded', String(!open));
       });
-
       document.addEventListener('click', e => {
         if (!userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
           userDropdown.classList.remove('open');
@@ -1484,96 +1483,41 @@
       });
     }
 
-    const switchPortalBtn = document.getElementById('switch-portal-btn');
-    if (switchPortalBtn) {
-      switchPortalBtn.addEventListener('click', () => {
-        if (userDropdown) userDropdown.classList.remove('open');
-        const nextPortal = state.portal === 'student' ? 'admin' : 'student';
-        setPortal(nextPortal);
-        toast(`Switched to ${nextPortal === 'admin' ? 'Admin Studio' : 'Student Portal'}`, 'info');
-      });
-    }
-
-    const openLoginBtn = document.getElementById('open-login-btn');
-    if (openLoginBtn) {
-      openLoginBtn.addEventListener('click', () => {
-        if (userDropdown) userDropdown.classList.remove('open');
-        showAuthModal();
-      });
-    }
-
+    // ── Sign Out ──
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
+      logoutBtn.addEventListener('click', async () => {
         if (userDropdown) userDropdown.classList.remove('open');
-        state.token = null;
-        state.user = {
-          name: 'Guest User',
-          email: 'guest@doctalk.com',
-          role: 'student'
-        };
-        try {
-          localStorage.removeItem('doctalk_token');
-          localStorage.removeItem('doctalk_user');
-        } catch (_) {}
-        setPortal('student');
-        toast('Signed out', 'info');
+        await apiLogout();
+        _clearSession();
+        resetAppState();
         showAuthModal();
+        toast('Signed out', 'info');
       });
     }
 
-    // ── Quick Demo Login Buttons ──
-    const demoStudentBtn = document.getElementById('demo-student-btn');
-    if (demoStudentBtn) {
-      demoStudentBtn.addEventListener('click', async () => {
-        try {
-          const res = await apiLogin('student@doctalk.com', 'student123');
-          state.token = res.token;
-          state.user = res.user;
-          try {
-            localStorage.setItem('doctalk_token', res.token);
-            localStorage.setItem('doctalk_user', JSON.stringify(res.user));
-          } catch (_) {}
-          setPortal('student');
-          hideAuthModal();
-          toast('Logged in as Alex Student (Student Portal)', 'success');
-        } catch (err) {
-          // If offline/mock server fallback
-          state.user = { name: 'Alex Student', email: 'student@doctalk.com', role: 'student' };
-          setPortal('student');
-          hideAuthModal();
-          toast('Entered Student Portal (Demo Mode)', 'success');
-        }
+    // ── Account Settings Button ──
+    const accountSettingsBtn = document.getElementById('account-settings-btn');
+    if (accountSettingsBtn) {
+      accountSettingsBtn.addEventListener('click', () => {
+        if (userDropdown) userDropdown.classList.remove('open');
+        showAccountModal();
       });
     }
 
-    const demoAdminBtn = document.getElementById('demo-admin-btn');
-    if (demoAdminBtn) {
-      demoAdminBtn.addEventListener('click', async () => {
-        try {
-          const res = await apiLogin('admin@doctalk.com', 'admin123');
-          state.token = res.token;
-          state.user = res.user;
-          try {
-            localStorage.setItem('doctalk_token', res.token);
-            localStorage.setItem('doctalk_user', JSON.stringify(res.user));
-          } catch (_) {}
-          setPortal('admin');
-          hideAuthModal();
-          toast('Logged in as Prof. Sarah (Admin Studio)', 'success');
-        } catch (err) {
-          state.user = { name: 'Prof. Sarah (Admin)', email: 'admin@doctalk.com', role: 'admin' };
-          setPortal('admin');
-          hideAuthModal();
-          toast('Entered Admin Studio (Demo Mode)', 'success');
-        }
+    // ── Admin Users Button ──
+    const adminUsersBtn = document.getElementById('admin-users-btn');
+    if (adminUsersBtn) {
+      adminUsersBtn.addEventListener('click', async () => {
+        if (userDropdown) userDropdown.classList.remove('open');
+        await showAdminUsersModal();
       });
     }
 
     // ── Auth Modal Tabs ──
-    const tabLogin = document.getElementById('tab-login');
+    const tabLogin    = document.getElementById('tab-login');
     const tabRegister = document.getElementById('tab-register');
-    const loginForm = document.getElementById('login-form');
+    const loginForm   = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
 
     if (tabLogin && tabRegister && loginForm && registerForm) {
@@ -1595,24 +1539,30 @@
     if (loginForm) {
       loginForm.addEventListener('submit', async e => {
         e.preventDefault();
-        const email = document.getElementById('login-email').value.trim();
+        const email    = document.getElementById('login-email').value.trim();
         const password = document.getElementById('login-password').value;
-        const errBox = document.getElementById('login-error');
+        const remember = document.getElementById('login-remember') ? document.getElementById('login-remember').checked : false;
+        const errBox   = document.getElementById('login-error');
+        const submitBtn = document.getElementById('login-submit-btn');
         errBox.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing in\u2026';
         try {
           const res = await apiLogin(email, password);
+          _saveSession(res.token, res.user, res.user.role || 'student', remember);
           state.token = res.token;
-          state.user = res.user;
-          try {
-            localStorage.setItem('doctalk_token', res.token);
-            localStorage.setItem('doctalk_user', JSON.stringify(res.user));
-          } catch (_) {}
+          state.user  = res.user;
+          resetAppState();
           setPortal(res.user.role || 'student');
           hideAuthModal();
+          await loadState();
           toast(`Welcome, ${res.user.name}!`, 'success');
         } catch (err) {
           errBox.textContent = err.message;
           errBox.classList.remove('hidden');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In';
         }
       });
     }
@@ -1621,70 +1571,192 @@
     if (registerForm) {
       registerForm.addEventListener('submit', async e => {
         e.preventDefault();
-        const name = document.getElementById('reg-name').value.trim();
-        const email = document.getElementById('reg-email').value.trim();
+        const name     = document.getElementById('reg-name').value.trim();
+        const email    = document.getElementById('reg-email').value.trim();
         const password = document.getElementById('reg-password').value;
-        const role = document.getElementById('reg-role').value;
-        const errBox = document.getElementById('register-error');
+        const errBox   = document.getElementById('register-error');
+        const submitBtn = document.getElementById('reg-submit-btn');
         errBox.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating account\u2026';
         try {
-          const res = await apiRegister(name, email, password, role);
+          const res = await apiSignup(name, email, password);
+          _saveSession(res.token, res.user, res.user.role || 'student', false);
           state.token = res.token;
-          state.user = res.user;
-          try {
-            localStorage.setItem('doctalk_token', res.token);
-            localStorage.setItem('doctalk_user', JSON.stringify(res.user));
-          } catch (_) {}
+          state.user  = res.user;
+          resetAppState();
           setPortal(res.user.role || 'student');
           hideAuthModal();
+          await loadState();
           toast(`Account created! Welcome, ${res.user.name}`, 'success');
         } catch (err) {
           errBox.textContent = err.message;
           errBox.classList.remove('hidden');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Account';
         }
       });
     }
 
-    // ── Modal Close Handlers ──
-    const authCloseBtn = document.getElementById('auth-close-btn');
-    if (authCloseBtn) authCloseBtn.addEventListener('click', hideAuthModal);
+    // ── Change Password Form ──
+    const changePwForm = document.getElementById('change-password-form');
+    if (changePwForm) {
+      changePwForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        const currentPw = document.getElementById('current-password').value;
+        const newPw     = document.getElementById('new-password').value;
+        const errEl     = document.getElementById('change-password-error');
+        const okEl      = document.getElementById('change-password-success');
+        const submitBtn = document.getElementById('change-password-btn');
+        errEl.classList.add('hidden');
+        okEl.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Updating\u2026';
+        try {
+          await apiChangePassword(currentPw, newPw);
+          okEl.classList.remove('hidden');
+          changePwForm.reset();
+        } catch (err) {
+          errEl.textContent = err.message;
+          errEl.classList.remove('hidden');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Update Password';
+        }
+      });
+    }
 
+    // ── Account Settings Modal Close ──
+    const accountCloseBtn = document.getElementById('account-close-btn');
+    if (accountCloseBtn) accountCloseBtn.addEventListener('click', hideAccountModal);
+
+    // ── Admin Users Modal Close ──
+    const adminCloseBtn = document.getElementById('admin-close-btn');
+    if (adminCloseBtn) adminCloseBtn.addEventListener('click', hideAdminModal);
+
+    // ── Citation Modal Close ──
     const citationCloseBtn = document.getElementById('citation-close-btn');
-    const citationDoneBtn = document.getElementById('citation-done-btn');
+    const citationDoneBtn  = document.getElementById('citation-done-btn');
     if (citationCloseBtn) citationCloseBtn.addEventListener('click', hideCitationModal);
-    if (citationDoneBtn) citationDoneBtn.addEventListener('click', hideCitationModal);
+    if (citationDoneBtn)  citationDoneBtn.addEventListener('click', hideCitationModal);
+
+    // Close modals on backdrop click
+    ['account-overlay', 'admin-overlay', 'citation-overlay'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', e => {
+        if (e.target === e.currentTarget) el.classList.add('hidden');
+      });
+    });
 
     // Initial Portal setup
     setPortal(state.portal || 'student');
   }
 
-  /* ══════════════════════════════════════════════════════════════════════════
-     §13B PORTAL & MODAL HELPERS
-     ══════════════════════════════════════════════════════════════════════════ */
-  function updateUserUI() {
-    const user = state.user || { name: 'Guest', email: 'guest@doctalk.com', role: 'student' };
-    const userName = document.getElementById('user-name');
-    const userAvatar = document.getElementById('user-avatar');
-    const dropName = document.getElementById('dropdown-user-name');
-    const dropEmail = document.getElementById('dropdown-user-email');
-    const dropRole = document.getElementById('dropdown-user-role-pill');
+  /* ======================================================================
+     §13B  SESSION HELPERS
+     ====================================================================== */
 
-    if (userName) userName.textContent = user.name;
-    if (dropName) dropName.textContent = user.name;
+  /** Persist token + user to localStorage (remember-me) or sessionStorage */
+  function _saveSession(token, user, portal, remember) {
+    const store = remember ? localStorage : sessionStorage;
+    try {
+      store.setItem('doctalk_token',  token);
+      store.setItem('doctalk_user',   JSON.stringify(user));
+      store.setItem('doctalk_portal', portal);
+    } catch (_) {}
+  }
+
+  /** Remove all auth keys from both storages and clear state */
+  function _clearSession() {
+    ['doctalk_token', 'doctalk_user', 'doctalk_portal'].forEach(k => {
+      try { localStorage.removeItem(k);   } catch (_) {}
+      try { sessionStorage.removeItem(k); } catch (_) {}
+    });
+    state.token = null;
+    state.user  = null;
+  }
+
+  /** Reset per-user app state (chat, files) without touching auth */
+  function resetAppState() {
+    state.history       = [];
+    state.messages      = [];
+    state.selectedMsgId = null;
+    state.files         = [];
+    state.ready         = false;
+    state.error         = null;
+
+    // Clear rendered messages, restore welcome card
+    const msgList = document.getElementById('message-list');
+    if (msgList) {
+      msgList.innerHTML = '';
+      const wc = document.createElement('div');
+      wc.id = 'welcome-card';
+      wc.innerHTML = [
+        '<div class="welcome-logo" aria-hidden="true">\uD83D\uDCAC</div>',
+        '<h2 class="welcome-title">Chat With Your Docs</h2>',
+        '<p class="welcome-sub">Upload your documents and ask questions. Your data stays local.</p>',
+        '<div class="example-questions" id="example-questions" role="list">',
+        '  <button class="example-q" role="listitem" type="button">\uD83D\uDCDD What are the main topics covered in my documents?</button>',
+        '  <button class="example-q" role="listitem" type="button">\uD83D\uDD0D Summarize the key concepts and findings.</button>',
+        '  <button class="example-q" role="listitem" type="button">\uD83D\uDCA1 What recommendations or conclusions are made?</button>',
+        '</div>'
+      ].join('');
+      msgList.appendChild(wc);
+      wc.querySelectorAll('.example-q').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (state.files.length === 0) return;
+          const text = btn.textContent.trim().replace(/^[^\w]+/, '').trim();
+          const ci = document.getElementById('chat-input');
+          if (ci) { ci.value = text; ci.dispatchEvent(new Event('input')); ci.focus(); }
+        });
+      });
+    }
+
+    const srcBody = document.getElementById('sources-panel-body');
+    if (srcBody) {
+      srcBody.innerHTML = '<div id="sources-empty"><span id="sources-empty-icon" aria-hidden="true">\uD83D\uDD0D</span><p>Ask a question to see sources and the reasoning trace here.</p></div>';
+    }
+
+    renderFiles();
+    hideBanner();
+  }
+
+  /* ======================================================================
+     §13C  PORTAL & MODAL HELPERS
+     ====================================================================== */
+  function updateUserUI() {
+    const user = state.user || { name: '\u2014', email: '\u2014', role: 'student' };
+    const userName   = document.getElementById('user-name');
+    const userAvatar = document.getElementById('user-avatar');
+    const dropName   = document.getElementById('dropdown-user-name');
+    const dropEmail  = document.getElementById('dropdown-user-email');
+    const dropRole   = document.getElementById('dropdown-user-role-pill');
+
+    if (userName)  userName.textContent  = user.name;
+    if (dropName)  dropName.textContent  = user.name;
     if (dropEmail) dropEmail.textContent = user.email;
 
-    const isAdmin = state.portal === 'admin';
-    if (userAvatar) userAvatar.textContent = isAdmin ? '🛡️' : '🎓';
+    const isAdmin = (user.role === 'admin');
+    if (userAvatar) userAvatar.textContent = isAdmin ? '\uD83D\uDEE1\uFE0F' : '\uD83C\uDF93';
 
     if (dropRole) {
       dropRole.textContent = isAdmin ? 'Admin / Instructor' : 'Student';
-      dropRole.className = `role-pill ${isAdmin ? 'admin' : 'student'}`;
+      dropRole.className   = `role-pill ${isAdmin ? 'admin' : 'student'}`;
     }
+
+    // Show/hide admin-only items in dropdown
+    document.querySelectorAll('.admin-only').forEach(el => {
+      el.classList.toggle('hidden', !isAdmin);
+    });
   }
 
   function setPortal(portalRole) {
     state.portal = portalRole;
-    try { localStorage.setItem('doctalk_portal', portalRole); } catch (_) {}
+    try {
+      const store = localStorage.getItem('doctalk_token') ? localStorage : sessionStorage;
+      store.setItem('doctalk_portal', portalRole);
+    } catch (_) {}
 
     const appShell = document.getElementById('app-shell');
     if (appShell) {
@@ -1693,22 +1765,13 @@
     }
 
     const badge = document.getElementById('portal-badge');
-    const switchBtn = document.getElementById('switch-portal-btn');
     const filesTitle = document.querySelector('#panel-files .panel-title');
 
     if (portalRole === 'student') {
-      if (badge) {
-        badge.textContent = '🎓 Student Portal';
-        badge.className = 'portal-badge student';
-      }
-      if (switchBtn) switchBtn.textContent = '🛡️ Switch to Admin Studio';
+      if (badge) { badge.textContent = '\uD83C\uDF93 Student Portal'; badge.className = 'portal-badge student'; }
       if (filesTitle) filesTitle.textContent = 'Course Notes';
     } else {
-      if (badge) {
-        badge.textContent = '🛡️ Admin Studio';
-        badge.className = 'portal-badge admin';
-      }
-      if (switchBtn) switchBtn.textContent = '🎓 Switch to Student Portal';
+      if (badge) { badge.textContent = '\uD83D\uDEE1\uFE0F Admin Studio'; badge.className = 'portal-badge admin'; }
       if (filesTitle) filesTitle.textContent = 'Document Manager';
     }
 
@@ -1720,12 +1783,8 @@
     if (!overlay) return;
     const errBox = document.getElementById('login-error');
     if (errBox) {
-      if (msg) {
-        errBox.textContent = msg;
-        errBox.classList.remove('hidden');
-      } else {
-        errBox.classList.add('hidden');
-      }
+      if (msg) { errBox.textContent = msg; errBox.classList.remove('hidden'); }
+      else errBox.classList.add('hidden');
     }
     overlay.classList.remove('hidden');
   }
@@ -1735,20 +1794,80 @@
     if (overlay) overlay.classList.add('hidden');
   }
 
+  function showAccountModal() {
+    const overlay = document.getElementById('account-overlay');
+    if (!overlay) return;
+    const infoEl = document.getElementById('account-user-info');
+    if (infoEl && state.user) infoEl.textContent = `${state.user.name} \u00B7 ${state.user.email}`;
+    const form = document.getElementById('change-password-form');
+    if (form) form.reset();
+    const errEl = document.getElementById('change-password-error');
+    const okEl  = document.getElementById('change-password-success');
+    if (errEl) errEl.classList.add('hidden');
+    if (okEl)  okEl.classList.add('hidden');
+    overlay.classList.remove('hidden');
+  }
+
+  function hideAccountModal() {
+    const overlay = document.getElementById('account-overlay');
+    if (overlay) overlay.classList.add('hidden');
+  }
+
+  async function showAdminUsersModal() {
+    const overlay   = document.getElementById('admin-overlay');
+    const loading   = document.getElementById('admin-users-loading');
+    const errEl     = document.getElementById('admin-users-error');
+    const tableWrap = document.getElementById('admin-users-table-wrap');
+    const tbody     = document.getElementById('admin-users-tbody');
+
+    if (!overlay) return;
+    overlay.classList.remove('hidden');
+    if (loading)   loading.style.display = '';
+    if (errEl)     errEl.classList.add('hidden');
+    if (tableWrap) tableWrap.classList.add('hidden');
+
+    try {
+      const users = await apiGetAdminUsers();
+      if (tbody) {
+        tbody.innerHTML = '';
+        users.forEach(u => {
+          const tr = document.createElement('tr');
+          const joined    = u.created_at ? new Date(u.created_at).toLocaleDateString()  : '\u2014';
+          const lastLogin = u.last_login ? new Date(u.last_login).toLocaleDateString()  : 'Never';
+          tr.innerHTML = `
+            <td>${esc(u.name)}</td>
+            <td>${esc(u.email)}</td>
+            <td><span class="role-pill ${esc(u.role)}">${esc(u.role)}</span></td>
+            <td>${esc(String(u.file_count != null ? u.file_count : 0))}</td>
+            <td>${esc(joined)}</td>
+            <td>${esc(lastLogin)}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+      if (loading)   loading.style.display = 'none';
+      if (tableWrap) tableWrap.classList.remove('hidden');
+    } catch (err) {
+      if (loading) loading.style.display = 'none';
+      if (errEl)   { errEl.textContent = err.message; errEl.classList.remove('hidden'); }
+    }
+  }
+
+  function hideAdminModal() {
+    const overlay = document.getElementById('admin-overlay');
+    if (overlay) overlay.classList.add('hidden');
+  }
+
   function showCitationModal(src, label) {
     const overlay = document.getElementById('citation-overlay');
     if (!overlay) return;
-
     const badgeNum = document.getElementById('citation-badge-num');
-    const docName = document.getElementById('citation-source-doc');
-    const pageTag = document.getElementById('citation-source-page');
-    const textEl = document.getElementById('citation-text');
-
+    const docName  = document.getElementById('citation-source-doc');
+    const pageTag  = document.getElementById('citation-source-page');
+    const textEl   = document.getElementById('citation-text');
     if (badgeNum) badgeNum.textContent = label || '[1]';
-    if (docName) docName.textContent = `📄 ${src.source || 'Document'}`;
-    if (pageTag) pageTag.textContent = src.page ? `Page ${src.page}` : (src.section || 'Excerpt');
-    if (textEl) textEl.textContent = src.text || 'No text excerpt provided.';
-
+    if (docName)  docName.textContent  = `\uD83D\uDCC4 ${src.source || 'Document'}`;
+    if (pageTag)  pageTag.textContent  = src.page ? `Page ${src.page}` : (src.section || 'Excerpt');
+    if (textEl)   textEl.textContent   = src.text || 'No text excerpt provided.';
     overlay.classList.remove('hidden');
   }
 
@@ -1757,9 +1876,9 @@
     if (overlay) overlay.classList.add('hidden');
   }
 
-  /* ══════════════════════════════════════════════════════════════════════════
+  /* ======================================================================
      §14  INIT
-     ══════════════════════════════════════════════════════════════════════════ */
+     ====================================================================== */
   async function loadState() {
     try {
       const s = await apiGetState();
@@ -1776,7 +1895,14 @@
 
   function init() {
     initEvents();
-    loadState();
+    if (!state.token || !state.user) {
+      // No valid session \u2014 force sign-in
+      showAuthModal();
+    } else {
+      // Restore previous session
+      setPortal(state.portal || state.user.role || 'student');
+      loadState();
+    }
   }
 
   // Kick off when DOM is ready

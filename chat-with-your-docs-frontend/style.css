@@ -1670,3 +1670,128 @@ button { cursor: pointer; font: inherit; }
   padding: 3px 10px;
   border-radius: 99px;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   GLOBAL UTILITIES & AUTH EXTENSIONS
+   ══════════════════════════════════════════════════════════════════════════════ */
+.hidden {
+  display: none !important;
+}
+
+.modal-overlay.hidden {
+  display: none !important;
+}
+
+/* Account Settings Modal */
+.account-card {
+  max-width: 440px;
+  padding: 32px 28px;
+}
+
+.settings-section {
+  margin-top: 18px;
+}
+
+.settings-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.auth-success-msg {
+  padding: 8px 12px;
+  background: var(--green-bg);
+  border: 1px solid var(--green);
+  border-radius: var(--radius-sm);
+  color: var(--green);
+  font-size: 12px;
+}
+
+.remember-row {
+  flex-direction: row !important;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* Admin Users Modal */
+.admin-card {
+  max-width: 820px;
+  padding: 32px 28px;
+}
+
+.users-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+.users-table th,
+.users-table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.users-table th {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  background: var(--bg-panel-raised);
+}
+
+.users-table td {
+  color: var(--text-primary);
+}
+
+.users-table tr:hover td {
+  background: var(--bg-hover);
+}
+
+.role-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.role-pill.admin {
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.role-pill.student {
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
