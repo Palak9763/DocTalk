@@ -87,7 +87,9 @@
     try {
       const res = await fetch(url, opts);
       if (res.status === 401 && !path.startsWith('/api/auth/')) {
-        showAuthModal('Session expired. Please sign in again.');
+        // Token expired or invalid — clear session and prompt sign-in
+        _clearSession();
+        showAuthModal('Your session has expired. Please sign in again.');
       }
       return res;
     } catch (err) {
@@ -103,6 +105,11 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
+    if (res.status === 429) {
+      const retryAfter = res.headers.get('Retry-After');
+      const secs = retryAfter ? parseInt(retryAfter, 10) : 60;
+      throw new Error(`Too many login attempts. Please wait ${secs} second(s) before trying again.`);
+    }
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: 'Invalid credentials' }));
       throw new Error(err.detail || 'Login failed');
