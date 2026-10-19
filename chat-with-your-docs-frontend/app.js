@@ -1526,12 +1526,18 @@
         tabRegister.classList.remove('active');
         loginForm.classList.remove('hidden');
         registerForm.classList.add('hidden');
+        const regErr = document.getElementById('register-error');
+        if (regErr) regErr.classList.add('hidden');
       });
       tabRegister.addEventListener('click', () => {
         tabRegister.classList.add('active');
         tabLogin.classList.remove('active');
         registerForm.classList.remove('hidden');
         loginForm.classList.add('hidden');
+        const loginErr = document.getElementById('login-error');
+        const loginOk  = document.getElementById('login-success');
+        if (loginErr) loginErr.classList.add('hidden');
+        if (loginOk)  loginOk.classList.add('hidden');
       });
     }
 
@@ -1543,8 +1549,10 @@
         const password = document.getElementById('login-password').value;
         const remember = document.getElementById('login-remember') ? document.getElementById('login-remember').checked : false;
         const errBox   = document.getElementById('login-error');
+        const okBox    = document.getElementById('login-success');
         const submitBtn = document.getElementById('login-submit-btn');
-        errBox.classList.add('hidden');
+        if (errBox) errBox.classList.add('hidden');
+        if (okBox)  okBox.classList.add('hidden');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Signing in\u2026';
         try {
@@ -1558,8 +1566,10 @@
           await loadState();
           toast(`Welcome, ${res.user.name}!`, 'success');
         } catch (err) {
-          errBox.textContent = err.message;
-          errBox.classList.remove('hidden');
+          if (errBox) {
+            errBox.textContent = err.message;
+            errBox.classList.remove('hidden');
+          }
         } finally {
           submitBtn.disabled = false;
           submitBtn.textContent = 'Sign In';
@@ -1576,22 +1586,39 @@
         const password = document.getElementById('reg-password').value;
         const errBox   = document.getElementById('register-error');
         const submitBtn = document.getElementById('reg-submit-btn');
-        errBox.classList.add('hidden');
+        if (errBox) errBox.classList.add('hidden');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Creating account\u2026';
         try {
-          const res = await apiSignup(name, email, password);
-          _saveSession(res.token, res.user, res.user.role || 'student', false);
-          state.token = res.token;
-          state.user  = res.user;
-          resetAppState();
-          setPortal(res.user.role || 'student');
-          hideAuthModal();
-          await loadState();
-          toast(`Account created! Welcome, ${res.user.name}`, 'success');
+          await apiSignup(name, email, password);
+
+          // Clear the registration form
+          registerForm.reset();
+
+          // Switch view to Sign In tab
+          if (tabLogin) tabLogin.click();
+
+          // Pre-fill email in Sign In form and focus password
+          const loginEmail = document.getElementById('login-email');
+          const loginPw    = document.getElementById('login-password');
+          if (loginEmail) loginEmail.value = email;
+          if (loginPw) {
+            loginPw.value = '';
+            loginPw.focus();
+          }
+
+          // Show prominent success notification on the login form
+          const loginSuccess = document.getElementById('login-success');
+          if (loginSuccess) {
+            loginSuccess.textContent = `Account created successfully for ${name}! Please sign in.`;
+            loginSuccess.classList.remove('hidden');
+          }
+          toast('Account created! Please sign in.', 'success');
         } catch (err) {
-          errBox.textContent = err.message;
-          errBox.classList.remove('hidden');
+          if (errBox) {
+            errBox.textContent = err.message;
+            errBox.classList.remove('hidden');
+          }
         } finally {
           submitBtn.disabled = false;
           submitBtn.textContent = 'Create Account';
@@ -1782,6 +1809,8 @@
     const overlay = document.getElementById('auth-overlay');
     if (!overlay) return;
     const errBox = document.getElementById('login-error');
+    const okBox  = document.getElementById('login-success');
+    if (okBox) okBox.classList.add('hidden');
     if (errBox) {
       if (msg) { errBox.textContent = msg; errBox.classList.remove('hidden'); }
       else errBox.classList.add('hidden');

@@ -1577,6 +1577,16 @@ button { cursor: pointer; font: inherit; }
   font-size: 12px;
 }
 
+.auth-success-msg {
+  padding: 8px 12px;
+  background: var(--green-bg);
+  border: 1px solid var(--green);
+  border-radius: var(--radius-sm);
+  color: var(--green);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .auth-submit-btn {
   margin-top: 6px;
   padding: 11px;
