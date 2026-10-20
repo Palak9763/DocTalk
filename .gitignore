@@ -1,0 +1,19 @@
+# Environments & secrets
+.env
+.env.*
+!.env.example
+*.jwt_secret
+.venv/
+
+# Databases & local user files
+*.db
+*.db-wal
+*.db-shm
+chat-with-your-docs-backend/data/library/
+chat-with-your-docs-backend/data/*.db
+
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage

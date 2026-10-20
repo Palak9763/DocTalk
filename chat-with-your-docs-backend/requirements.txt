@@ -24,3 +24,4 @@ reportlab
 PyJWT
 argon2-cffi
 email-validator
+supabase

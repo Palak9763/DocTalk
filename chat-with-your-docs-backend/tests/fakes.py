@@ -1,5 +1,4 @@
 """Test doubles and fake client implementations for unit tests."""
-
 import hashlib
 import json
 from pathlib import Path
@@ -11,8 +10,6 @@ import numpy as np
 from reportlab.pdfgen import canvas
 
 from rag import config, llm
-
-
 class FakeEmbedResponse:
     """Container for mock embeddings matching Ollama response schema."""
 
@@ -24,7 +21,6 @@ class FakeEmbedResponse:
             return self.embeddings
         raise KeyError(item)
 
-
 class FakeClient:
     """Mock Ollama client for deterministic offline testing."""
 
@@ -33,12 +29,7 @@ class FakeClient:
         self.calls: list[dict[str, Any]] = []
         self.log: list[str] = []
 
-    def embed(
-        self,
-        model: str,
-        input: list[str] | str,
-        keep_alive: str | None = None,
-    ) -> FakeEmbedResponse:
+    def embed(self,model: str,input: list[str] | str,keep_alive: str | None = None,) -> FakeEmbedResponse:
         inputs = [input] if isinstance(input, str) else list(input)
         self.calls.append({
             "method": "embed",

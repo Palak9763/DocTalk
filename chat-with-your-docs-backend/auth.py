@@ -284,9 +284,30 @@ def decode_access_token(token: str) -> dict[str, Any]:
         )
 
 # ---------------------------------------------------------------------------
-# User DB Operations
+# User DB Operations (Supabase with SQLite Fallback)
 # ---------------------------------------------------------------------------
+try:
+    from supabase_backend import (
+        is_supabase_configured,
+        sb_create_user,
+        sb_get_user_by_email,
+        sb_get_user_by_id,
+        sb_update_last_login,
+        sb_update_user_password,
+    )
+except ImportError:
+    def is_supabase_configured() -> bool: return False
+    def sb_get_user_by_id(u: str): return None
+    def sb_get_user_by_email(e: str): return None
+    def sb_create_user(d: dict): return False
+    def sb_update_user_password(u: str, h: str): return False
+    def sb_update_last_login(u: str, t: str): pass
+
 def get_user_by_id(user_id: str, db_path: Path | str | None = None) -> dict[str, Any] | None:
+    if is_supabase_configured():
+        sb_user = sb_get_user_by_id(user_id)
+        if sb_user:
+            return sb_user
     conn = get_db(db_path)
     try:
         cur = conn.cursor()
@@ -300,12 +321,17 @@ def get_user_by_id(user_id: str, db_path: Path | str | None = None) -> dict[str,
         conn.close()
 
 def get_user_by_email(email: str, db_path: Path | str | None = None) -> dict[str, Any] | None:
+    email_clean = email.strip().lower()
+    if is_supabase_configured():
+        sb_user = sb_get_user_by_email(email_clean)
+        if sb_user:
+            return sb_user
     conn = get_db(db_path)
     try:
         cur = conn.cursor()
         cur.execute(
             "SELECT id, email, name, password_hash, role, created_at, last_login FROM users WHERE email = ?",
-            (email.strip().lower(),),
+            (email_clean,),
         )
         row = cur.fetchone()
         return dict(row) if row else None
@@ -319,12 +345,33 @@ def create_user(
     role: str = "user",
     db_path: Path | str | None = None,
 ) -> dict[str, Any]:
-    conn = get_db(db_path)
     user_id = uuid.uuid4().hex
     email_clean = email.strip().lower()
     pw_hash = hash_password(password)
     now_iso = datetime.now(timezone.utc).isoformat()
+    record = {
+        "id": user_id,
+        "email": email_clean,
+        "name": name.strip(),
+        "password_hash": pw_hash,
+        "role": role,
+        "created_at": now_iso,
+        "last_login": None,
+    }
 
+    if is_supabase_configured():
+        ok = sb_create_user(record)
+        if ok:
+            return {
+                "id": user_id,
+                "email": email_clean,
+                "name": name.strip(),
+                "role": role,
+                "created_at": now_iso,
+                "last_login": None,
+            }
+
+    conn = get_db(db_path)
     try:
         with conn:
             conn.execute(
@@ -346,6 +393,8 @@ def create_user(
         conn.close()
 
 def update_user_password(user_id: str, new_password_hash: str, db_path: Path | str | None = None) -> None:
+    if is_supabase_configured():
+        sb_update_user_password(user_id, new_password_hash)
     conn = get_db(db_path)
     try:
         with conn:
@@ -357,8 +406,10 @@ def update_user_password(user_id: str, new_password_hash: str, db_path: Path | s
         conn.close()
 
 def update_last_login(user_id: str, db_path: Path | str | None = None) -> None:
-    conn = get_db(db_path)
     now_iso = datetime.now(timezone.utc).isoformat()
+    if is_supabase_configured():
+        sb_update_last_login(user_id, now_iso)
+    conn = get_db(db_path)
     try:
         with conn:
             conn.execute(
