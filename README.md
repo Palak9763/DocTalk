@@ -124,7 +124,6 @@ ollama pull nomic-embed-text
 The BGE reranker is loaded through `sentence-transformers` and may download its model files the first time it runs.
 
 ## 🚀 Installation and Setup
-
 ### 1. Clone the repository
 
 ```bash
@@ -133,7 +132,6 @@ cd DocTalk
 ```
 
 ### 2. Set up the backend
-
 Open a terminal in the backend directory:
 
 ```bash
@@ -142,13 +140,11 @@ python -m venv .venv
 ```
 
 Activate the virtual environment on Windows:
-
 ```powershell
 .venv\Scripts\activate
 ```
 
 Install the dependencies:
-
 ```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
@@ -185,7 +181,6 @@ http://127.0.0.1:8000/docs
 ```
 
 ### 5. Start the frontend
-
 Open a second terminal in the frontend directory:
 
 ```bash
