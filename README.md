@@ -3,7 +3,6 @@
 ### Production-Grade Adaptive Retrieval-Augmented Generation (RAG) System
 
 DocTalk is an intelligent document question-answering system that lets users upload documents and ask questions in natural language. It combines hybrid retrieval, query transformation, cross-encoder reranking, adaptive retrieval, and grounded answer generation to provide relevant responses with source citations.
-
 Instead of sending entire documents to the language model, DocTalk retrieves the most relevant text chunks and uses them to generate context-aware answers.
 
 ## ✨ Features
