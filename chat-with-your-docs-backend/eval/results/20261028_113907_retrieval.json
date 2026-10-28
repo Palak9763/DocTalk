@@ -1,0 +1,1408 @@
+{
+  "metadata": {
+    "mode": "retrieval",
+    "timestamp": "20261028_113907",
+    "docs_path": "D:\\DocTalk\\chat-with-your-docs-backend\\data\\notes",
+    "dataset_path": "C:\\Users\\palak\\AppData\\Local\\Temp\\pytest-of-palak\\pytest-32\\test_run_eval_retrieval_mode_o0\\test_dataset.json",
+    "chunks_count": 16,
+    "questions_count": 6,
+    "chat_model": "qwen2.5:3b-instruct",
+    "embed_model": "nomic-embed-text",
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "judge_model": "qwen2.5:3b-instruct",
+    "judge_stats": {
+      "calls": 0,
+      "skips": 0
+    },
+    "seed": 42
+  },
+  "config_summaries": {
+    "sparse": {
+      "count": 4,
+      "skipped": 2,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr": 1.0,
+      "ndcg@5": 1.0
+    },
+    "dense": {
+      "count": 4,
+      "skipped": 2,
+      "needs_retrieval": 1.0,
+      "hit@5": 0.0,
+      "recall@5": 0.0,
+      "precision@5": 0.0,
+      "mrr": 0.0,
+      "ndcg@5": 0.0
+    },
+    "hybrid": {
+      "count": 4,
+      "skipped": 2,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr": 0.47916666666666663,
+      "ndcg@5": 0.6076691395183482
+    },
+    "hybrid_rerank": {
+      "count": 4,
+      "skipped": 2,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr": 1.0,
+      "ndcg@5": 1.0
+    },
+    "+ rewrite": {
+      "count": 4,
+      "skipped": 2,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr": 1.0,
+      "ndcg@5": 1.0
+    },
+    "+ expand": {
+      "count": 4,
+      "skipped": 2,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr": 1.0,
+      "ndcg@5": 1.0
+    },
+    "+ hyde": {
+      "count": 4,
+      "skipped": 2,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr": 1.0,
+      "ndcg@5": 1.0
+    },
+    "full_selfrag": {
+      "count": 4,
+      "skipped": 2,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "mrr": 1.0,
+      "ndcg@5": 1.0
+    }
+  },
+  "bootstrap_ci": {
+    "sparse": {
+      "prev_config": null,
+      "mrr": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "baseline"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "baseline"
+      }
+    },
+    "dense": {
+      "prev_config": "sparse",
+      "mrr": {
+        "diff": -1.0,
+        "ci_low": -1.0,
+        "ci_high": -1.0,
+        "str": "-1.000 [CI -1.000, -1.000]"
+      },
+      "recall@5": {
+        "diff": -1.0,
+        "ci_low": -1.0,
+        "ci_high": -1.0,
+        "str": "-1.000 [CI -1.000, -1.000]"
+      }
+    },
+    "hybrid": {
+      "prev_config": "dense",
+      "mrr": {
+        "diff": 0.47916666666666663,
+        "ci_low": 0.2708333333333333,
+        "ci_high": 0.8333333333333333,
+        "str": "+0.479 [CI +0.271, +0.833]"
+      },
+      "recall@5": {
+        "diff": 1.0,
+        "ci_low": 1.0,
+        "ci_high": 1.0,
+        "str": "+1.000 [CI +1.000, +1.000]"
+      }
+    },
+    "hybrid_rerank": {
+      "prev_config": "hybrid",
+      "mrr": {
+        "diff": 0.5208333333333334,
+        "ci_low": 0.16666666666666669,
+        "ci_high": 0.7291666666666667,
+        "str": "+0.521 [CI +0.167, +0.729]"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      }
+    },
+    "+ rewrite": {
+      "prev_config": "hybrid_rerank",
+      "mrr": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      }
+    },
+    "+ expand": {
+      "prev_config": "+ rewrite",
+      "mrr": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      }
+    },
+    "+ hyde": {
+      "prev_config": "+ expand",
+      "mrr": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      }
+    },
+    "full_selfrag": {
+      "prev_config": "+ hyde",
+      "mrr": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      }
+    }
+  },
+  "type_summaries": {
+    "sparse": {
+      "factual": {
+        "count": 2,
+        "skipped": 1,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 1
+      },
+      "exact_term": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      }
+    },
+    "dense": {
+      "factual": {
+        "count": 2,
+        "skipped": 1,
+        "needs_retrieval": 1.0,
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 1
+      },
+      "exact_term": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      "vocabulary_gap": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      }
+    },
+    "hybrid": {
+      "factual": {
+        "count": 2,
+        "skipped": 1,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.6666666666666666,
+        "ndcg@5": 0.75
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 1
+      },
+      "exact_term": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.25,
+        "ndcg@5": 0.43067655807339306
+      },
+      "vocabulary_gap": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.3333333333333333,
+        "ndcg@5": 0.5
+      }
+    },
+    "hybrid_rerank": {
+      "factual": {
+        "count": 2,
+        "skipped": 1,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 1
+      },
+      "exact_term": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      }
+    },
+    "+ rewrite": {
+      "factual": {
+        "count": 2,
+        "skipped": 1,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 1
+      },
+      "exact_term": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      }
+    },
+    "+ expand": {
+      "factual": {
+        "count": 2,
+        "skipped": 1,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 1
+      },
+      "exact_term": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      }
+    },
+    "+ hyde": {
+      "factual": {
+        "count": 2,
+        "skipped": 1,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 1
+      },
+      "exact_term": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      }
+    },
+    "full_selfrag": {
+      "factual": {
+        "count": 2,
+        "skipped": 1,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 1
+      },
+      "exact_term": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 1,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      }
+    }
+  },
+  "raw_results": {
+    "sparse": [
+      {
+        "id": "t1",
+        "type": "factual",
+        "question": "What is backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t2",
+        "type": "no_retrieval",
+        "question": "Hello there!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "t3",
+        "type": "factual",
+        "question": "Why does scaled dot-product divide by sqrt(d_k)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "04_rag.md#2.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#3.0",
+          "04_rag.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t4",
+        "type": "exact_term",
+        "question": "What formula defines RRF score with constant k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#2.0",
+          "02_neural_networks.md#2.0",
+          "04_rag.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t5",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients prevent memorizing noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t6_broken",
+        "type": "factual",
+        "question": null,
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "error": "'NoneType' object has no attribute 'strip'",
+        "_skip": true
+      }
+    ],
+    "dense": [
+      {
+        "id": "t1",
+        "type": "factual",
+        "question": "What is backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#0.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#1.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0"
+        ],
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      {
+        "id": "t2",
+        "type": "no_retrieval",
+        "question": "Hello there!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#1.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "t3",
+        "type": "factual",
+        "question": "Why does scaled dot-product divide by sqrt(d_k)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#0.0",
+          "04_rag.md#1.0",
+          "02_neural_networks.md#1.0",
+          "03_transformers.md#2.0",
+          "04_rag.md#3.0"
+        ],
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      {
+        "id": "t4",
+        "type": "exact_term",
+        "question": "What formula defines RRF score with constant k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "03_transformers.md#3.0",
+          "04_rag.md#3.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      {
+        "id": "t5",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients prevent memorizing noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "03_transformers.md#2.0",
+          "04_rag.md#2.0",
+          "03_transformers.md#0.0",
+          "04_rag.md#3.0"
+        ],
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr": 0.0,
+        "ndcg@5": 0.0
+      },
+      {
+        "id": "t6_broken",
+        "type": "factual",
+        "question": null,
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "error": "'NoneType' object has no attribute 'strip'",
+        "_skip": true
+      }
+    ],
+    "hybrid": [
+      {
+        "id": "t1",
+        "type": "factual",
+        "question": "What is backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "04_rag.md#0.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t2",
+        "type": "no_retrieval",
+        "question": "Hello there!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#1.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "t3",
+        "type": "factual",
+        "question": "Why does scaled dot-product divide by sqrt(d_k)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "04_rag.md#2.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#0.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.3333333333333333,
+        "ndcg@5": 0.5
+      },
+      {
+        "id": "t4",
+        "type": "exact_term",
+        "question": "What formula defines RRF score with constant k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "02_neural_networks.md#2.0",
+          "04_rag.md#2.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.25,
+        "ndcg@5": 0.43067655807339306
+      },
+      {
+        "id": "t5",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients prevent memorizing noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#1.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.3333333333333333,
+        "ndcg@5": 0.5
+      },
+      {
+        "id": "t6_broken",
+        "type": "factual",
+        "question": null,
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "error": "'NoneType' object has no attribute 'strip'",
+        "_skip": true
+      }
+    ],
+    "hybrid_rerank": [
+      {
+        "id": "t1",
+        "type": "factual",
+        "question": "What is backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t2",
+        "type": "no_retrieval",
+        "question": "Hello there!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "01_regression.md#0.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "t3",
+        "type": "factual",
+        "question": "Why does scaled dot-product divide by sqrt(d_k)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t4",
+        "type": "exact_term",
+        "question": "What formula defines RRF score with constant k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t5",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients prevent memorizing noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#0.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t6_broken",
+        "type": "factual",
+        "question": null,
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "error": "'NoneType' object has no attribute 'strip'",
+        "_skip": true
+      }
+    ],
+    "+ rewrite": [
+      {
+        "id": "t1",
+        "type": "factual",
+        "question": "What is backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t2",
+        "type": "no_retrieval",
+        "question": "Hello there!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "01_regression.md#0.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "t3",
+        "type": "factual",
+        "question": "Why does scaled dot-product divide by sqrt(d_k)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t4",
+        "type": "exact_term",
+        "question": "What formula defines RRF score with constant k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t5",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients prevent memorizing noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#0.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t6_broken",
+        "type": "factual",
+        "question": null,
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "error": "'NoneType' object has no attribute 'strip'",
+        "_skip": true
+      }
+    ],
+    "+ expand": [
+      {
+        "id": "t1",
+        "type": "factual",
+        "question": "What is backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t2",
+        "type": "no_retrieval",
+        "question": "Hello there!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "01_regression.md#0.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "t3",
+        "type": "factual",
+        "question": "Why does scaled dot-product divide by sqrt(d_k)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t4",
+        "type": "exact_term",
+        "question": "What formula defines RRF score with constant k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t5",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients prevent memorizing noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#0.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t6_broken",
+        "type": "factual",
+        "question": null,
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "error": "'NoneType' object has no attribute 'strip'",
+        "_skip": true
+      }
+    ],
+    "+ hyde": [
+      {
+        "id": "t1",
+        "type": "factual",
+        "question": "What is backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t2",
+        "type": "no_retrieval",
+        "question": "Hello there!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "01_regression.md#0.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "t3",
+        "type": "factual",
+        "question": "Why does scaled dot-product divide by sqrt(d_k)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t4",
+        "type": "exact_term",
+        "question": "What formula defines RRF score with constant k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t5",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients prevent memorizing noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#0.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t6_broken",
+        "type": "factual",
+        "question": null,
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "error": "'NoneType' object has no attribute 'strip'",
+        "_skip": true
+      }
+    ],
+    "full_selfrag": [
+      {
+        "id": "t1",
+        "type": "factual",
+        "question": "What is backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t2",
+        "type": "no_retrieval",
+        "question": "Hello there!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "01_regression.md#0.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "t3",
+        "type": "factual",
+        "question": "Why does scaled dot-product divide by sqrt(d_k)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t4",
+        "type": "exact_term",
+        "question": "What formula defines RRF score with constant k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t5",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients prevent memorizing noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#0.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "t6_broken",
+        "type": "factual",
+        "question": null,
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "error": "'NoneType' object has no attribute 'strip'",
+        "_skip": true
+      }
+    ]
+  }
+}

@@ -6,6 +6,8 @@ hnswlib
 sentence-transformers
 python-dotenv
 tqdm
+# Optional vector store backend (VECTOR_BACKEND=qdrant)
+qdrant-client
 
 # Document Ingestion
 pypdf

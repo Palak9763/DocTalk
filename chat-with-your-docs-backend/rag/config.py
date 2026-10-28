@@ -11,10 +11,24 @@ ROOT: Path = Path(__file__).resolve().parent.parent
 # Load .env file; real environment variables win (override=False)
 load_dotenv(ROOT / ".env", override=False)
 
+def _resolve_dir(env_val: str | None, default: Path) -> Path:
+    if not env_val:
+        return default
+    p = Path(env_val)
+    return p if p.is_absolute() else ROOT / p
+
+
 # Paths
-NOTES_DIR: Path = Path(os.getenv("NOTES_DIR", str(ROOT / "data" / "notes")))  # Lecture notes source directory: local raw documents
-LIBRARY_DIR: Path = Path(os.getenv("LIBRARY_DIR", str(ROOT / "data" / "library")))  # Uploaded document library: storage vs ephemeral handling
-INDEX_DIR: Path = Path(os.getenv("INDEX_DIR", str(ROOT / "index")))  # Embedding index cache: persistence vs recomputation time
+NOTES_DIR: Path = _resolve_dir(os.getenv("NOTES_DIR"), ROOT / "data" / "notes")  # Lecture notes source directory: local raw documents
+LIBRARY_DIR: Path = _resolve_dir(os.getenv("LIBRARY_DIR"), ROOT / "data" / "library")  # Uploaded document library: storage vs ephemeral handling
+INDEX_DIR: Path = _resolve_dir(os.getenv("INDEX_DIR"), ROOT / "index")  # Embedding index cache: persistence vs recomputation time
+
+# Vector store backend settings
+VECTOR_BACKEND: str = os.getenv("VECTOR_BACKEND", "memory").strip().lower()
+QDRANT_URL: str = os.getenv("QDRANT_URL", "").strip()
+QDRANT_API_KEY: str | None = os.getenv("QDRANT_API_KEY") or None
+QDRANT_PATH: Path = _resolve_dir(os.getenv("QDRANT_PATH"), ROOT / "data" / "qdrant")
+QDRANT_COLLECTION_PREFIX: str = os.getenv("QDRANT_COLLECTION_PREFIX", "cwyd").strip()
 
 # Model settings
 OLLAMA_HOST: str = os.getenv("OLLAMA_HOST", "http://localhost:11434")  # Ollama endpoint: local daemon vs remote GPU host

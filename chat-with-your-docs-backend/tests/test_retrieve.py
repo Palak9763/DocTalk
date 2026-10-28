@@ -71,22 +71,18 @@ def test_inverted_index_bm25_math() -> None:
     assert len(res_common) == 3
     assert all(score > 0.0 for _, score in res_common)
 
-
 def test_analyze() -> None:
     """Verify lowercasing, stopword dropping, and Snowball morphological stemming."""
     # Lowercasing
     assert "gradient" in analyze("GRADIENT")
-
     # Stopwords dropping
     assert analyze("the and in on of for") == []
-
     # Stemming "training models" vs "trains model"
     tokens1 = analyze("training models", stem=True)
     tokens2 = analyze("trains model", stem=True)
     assert tokens1 == ["train", "model"]
     assert tokens2 == ["train", "model"]
     assert tokens1 == tokens2
-
 
 def test_rrf() -> None:
     """Verify reciprocal rank fusion scoring rules and ties."""
@@ -110,7 +106,6 @@ def test_rrf() -> None:
     fused2 = rrf([[4, 3], [5, 3]], k=60)
     scores_dict = dict(fused2)
     assert scores_dict[3] > scores_dict[4]
-
 
 def test_search_shape() -> None:
     """Verify candidate count limits, deduplication, path ranks, and mode error handling."""
@@ -235,7 +230,6 @@ def test_search_shape() -> None:
         except ValueError:
             pass
 
-
 def test_exact_vs_hnsw() -> None:
     """Verify HNSW approximate search top-10 overlap with exact cosine search >= 0.9."""
     try:
@@ -273,7 +267,6 @@ def test_exact_vs_hnsw() -> None:
         mean_overlap >= 0.9
     ), f"Mean top-10 overlap between exact and HNSW was too low: {mean_overlap:.3f}"
 
-
 def test_real_corpus_sanity() -> None:
     """Verify sparse search on lecture notes finds Xavier initialization in top 3."""
     with tempfile.TemporaryDirectory() as td:
@@ -292,7 +285,6 @@ def test_real_corpus_sanity() -> None:
             f"Expected chunk containing 'Xavier' in top 3 sparse results, "
             f"got: {[chunks[i].id for i in top3_sparse]}"
         )
-
 
 def main() -> None:
     print("Running test_inverted_index_bm25_math...")
@@ -314,7 +306,6 @@ def main() -> None:
     test_real_corpus_sanity()
 
     print("All retrieval tests passed successfully!")
-
 
 if __name__ == "__main__":
     main()

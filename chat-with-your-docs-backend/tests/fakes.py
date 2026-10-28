@@ -5,14 +5,11 @@ from pathlib import Path
 import re
 import types
 from typing import Any, Generator
-
 import numpy as np
 from reportlab.pdfgen import canvas
-
 from rag import config, llm
 class FakeEmbedResponse:
     """Container for mock embeddings matching Ollama response schema."""
-
     def __init__(self, embeddings: list[list[float]]):
         self.embeddings = embeddings
 
@@ -20,7 +17,6 @@ class FakeEmbedResponse:
         if item == "embeddings":
             return self.embeddings
         raise KeyError(item)
-
 class FakeClient:
     """Mock Ollama client for deterministic offline testing."""
 
@@ -53,24 +49,10 @@ class FakeClient:
             embeddings.append(vec.tolist())
 
         return FakeEmbedResponse(embeddings)
-
     def chat(
-        self,
-        model: str,
-        messages: list[dict[str, str]],
-        stream: bool = False,
-        options: dict[str, Any] | None = None,
-        keep_alive: str | None = None,
-    ) -> Any:
+        self,model: str,messages: list[dict[str, str]],stream: bool = False,options: dict[str, Any] | None = None,keep_alive: str | None = None,) -> Any:
         self.calls.append({
-            "method": "chat",
-            "model": model,
-            "messages": messages,
-            "stream": stream,
-            "options": options,
-            "keep_alive": keep_alive,
-        })
-
+            "method": "chat","model": model,"messages": messages,"stream": stream,"options": options,"keep_alive": keep_alive,})
         system_prompt = ""
         user_prompt = ""
         for m in messages:
@@ -112,7 +94,6 @@ class FakeClient:
                 m_hist = re.findall(r"(?:what is|about|explains?)\s+([a-zA-Z0-9_\- ]+?)(?:\?|\.|\n|$)", history_text, re.IGNORECASE)
                 if m_hist:
                     topic = m_hist[-1].strip()
-
             # Replace pronoun in question
             rewritten = re.sub(r"\b(it|this|that)\b", topic, question, count=1, flags=re.IGNORECASE)
             rewritten = re.sub(r"\bits\b", f"{topic}'s", rewritten, count=1, flags=re.IGNORECASE)
@@ -120,19 +101,16 @@ class FakeClient:
             if rewritten:
                 rewritten = rewritten[0].upper() + rewritten[1:]
             content = rewritten
-
         elif "expansion" in sys_lower or "expand" in sys_lower:
             self.log.append("expand")
             q_match = re.search(r'for:\s*"(.*?)"', user_prompt)
             query = q_match.group(1).strip() if q_match else user_prompt.strip()
             content = json.dumps({"queries": [f"{query} mechanism", f"{query} derivation"]})
-
         elif "hypothetical" in sys_lower or "lecture note" in sys_lower or "hyde" in sys_lower:
             self.log.append("hyde")
             q_match = re.search(r"Query:\s*(.*?)(?:\nLecture passage:|\Z)", user_prompt, re.DOTALL)
             query = q_match.group(1).strip() if q_match else user_prompt.strip()
             content = f"In machine learning, {query} describes a core mathematical technique used throughout lecture notes."
-
         else:
             self.log.append("chat")
 
@@ -143,9 +121,7 @@ class FakeClient:
             return _gen()
         return {"message": {"content": content}}
 
-
 _ORIGINAL_RERANKER_SCORE: Any = None
-
 
 def install_fake_reranker(target: Any = None) -> None:
     """Install a word-overlap fake scorer (values in [0, 1]) on Reranker without loading any model."""
@@ -175,7 +151,6 @@ def install_fake_reranker(target: Any = None) -> None:
     else:
         Reranker.score = fake_score
 
-
 def restore_reranker() -> None:
     """Restore original Reranker.score method if monkeypatched."""
     global _ORIGINAL_RERANKER_SCORE
@@ -184,8 +159,6 @@ def restore_reranker() -> None:
     if _ORIGINAL_RERANKER_SCORE is not None:
         Reranker.score = _ORIGINAL_RERANKER_SCORE
 
-
-
 def install(index_dir: Path | str) -> FakeClient:
     """Install FakeClient into llm module and point INDEX_DIR to index_dir."""
     fake = FakeClient()
@@ -193,7 +166,6 @@ def install(index_dir: Path | str) -> FakeClient:
     config.INDEX_DIR = Path(index_dir)
     llm.reset_embedding_cache()
     return fake
-
 
 def make_pdf(path: Path | str, pages: list[str]) -> None:
     """Generate a valid multi-page PDF document with specified page texts."""

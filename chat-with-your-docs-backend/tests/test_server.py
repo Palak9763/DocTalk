@@ -1,7 +1,5 @@
 """Phase 5 tests: FastAPI server endpoints using TestClient with fake LLM + fake reranker."""
-
 from __future__ import annotations
-
 import io
 import json
 import os
@@ -10,10 +8,8 @@ import tempfile
 import types
 from pathlib import Path
 from typing import Any, Iterator
-
 import pytest
 from fastapi.testclient import TestClient
-
 # ── Project root on path ──────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
@@ -21,14 +17,11 @@ if str(ROOT) not in sys.path:
 
 # ── Fakes (must be imported before server to allow monkey-patching) ───────────
 from tests.fakes import FakeClient, install_fake_reranker, make_pdf, restore_reranker
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
 def _make_md_bytes(text: str = "# Title\n\nSome content about machine learning.") -> bytes:
     return text.encode("utf-8")
-
 
 def _make_pdf_bytes(pages: list[str] | None = None) -> bytes:
     """Return bytes of a valid multi-page PDF."""
@@ -49,7 +42,6 @@ def _make_pdf_bytes(pages: list[str] | None = None) -> bytes:
     c.save()
     return buf.getvalue()
 
-
 def _make_scanned_pdf_bytes() -> bytes:
     """Return bytes of a PDF with no text layer (simulated scanned PDF)."""
     buf = io.BytesIO()
@@ -60,17 +52,14 @@ def _make_scanned_pdf_bytes() -> bytes:
     c.save()
     return buf.getvalue()
 
-
 def _parse_ndjson(content: bytes) -> list[dict]:
     """Parse all JSON lines from an NDJSON response."""
     lines = content.decode().strip().split("\n")
     return [json.loads(line) for line in lines if line.strip()]
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
-
 @pytest.fixture()
 def tmp_dirs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Point LIBRARY_DIR and INDEX_DIR to tmp_path for isolation."""
@@ -81,7 +70,6 @@ def tmp_dirs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setattr("rag.config.LIBRARY_DIR", lib)
     monkeypatch.setattr("rag.config.INDEX_DIR", idx)
     return tmp_path
-
 
 @pytest.fixture()
 def fake_client(monkeypatch: pytest.MonkeyPatch) -> FakeClient:
@@ -95,15 +83,12 @@ def fake_client(monkeypatch: pytest.MonkeyPatch) -> FakeClient:
     llm.reset_embedding_cache()
     return fc
 
-
 @pytest.fixture()
 def client(tmp_dirs: Path, fake_client: FakeClient, monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
     """Build a fresh TestClient for each test, with fakes installed."""
     install_fake_reranker()
-
     import auth
     import server as srv
-
     db_path = tmp_dirs / "app.db"
     monkeypatch.setattr(auth, "AUTH_DB_PATH", db_path)
     auth.init_auth_db(db_path)
@@ -111,27 +96,20 @@ def client(tmp_dirs: Path, fake_client: FakeClient, monkeypatch: pytest.MonkeyPa
     # Create test user and generate Bearer token
     user = auth.create_user("Test User", "test@example.com", "password123", role="admin", db_path=db_path)
     token = auth.create_access_token(user["id"], user["role"])
-
     monkeypatch.setattr(srv, "_default_user_id", user["id"])
     srv.registry.reset()
-
     # Reset store state for isolation
     monkeypatch.setattr(srv.store, "_chunks", {})
     monkeypatch.setattr(srv.store, "ready", False)
     monkeypatch.setattr(srv.store, "error", None)
     monkeypatch.setattr(srv.store, "_pipeline", None)
-
     with TestClient(srv.app, raise_server_exceptions=False) as tc:
         tc.headers["Authorization"] = f"Bearer {token}"
         yield tc
-
     restore_reranker()
-
-
 # ---------------------------------------------------------------------------
 # TASK 2 tests
 # ---------------------------------------------------------------------------
-
 class TestRoot:
     def test_get_root_returns_json_not_html(self, client: TestClient) -> None:
         """GET / returns JSON info, not HTML."""
@@ -141,8 +119,6 @@ class TestRoot:
         assert body["name"] == "Chat With Your Docs API"
         assert "/docs" in body["docs"]
         assert "state" in body
-
-
 class TestState:
     def test_initial_state_no_files(self, client: TestClient) -> None:
         """GET /api/state with no files returns ready=False and files=[]."""
@@ -153,8 +129,6 @@ class TestState:
         assert body["files"] == []
         assert "modes" in body
         assert "models" in body
-
-
 class TestUpload:
     def test_upload_pdf_md_exe_scanned_pdf(
         self, client: TestClient, tmp_dirs: Path
@@ -194,15 +168,12 @@ class TestUpload:
         """Uploading the same filename twice replaces it (count unchanged)."""
         md1 = _make_md_bytes("# v1\n\nFirst version content here.")
         md2 = _make_md_bytes("# v2\n\nSecond version content here.")
-
         r1 = client.post("/api/upload", files=[("files", ("doc.md", md1, "text/markdown"))])
         assert r1.json()["results"][0]["ok"] is True
         count1 = len(r1.json()["files"])
-
         r2 = client.post("/api/upload", files=[("files", ("doc.md", md2, "text/markdown"))])
         assert r2.json()["results"][0]["ok"] is True
         count2 = len(r2.json()["files"])
-
         assert count1 == count2 == 1
 
     def test_path_trick_filename_sanitised(self, client: TestClient) -> None:
@@ -219,7 +190,6 @@ class TestUpload:
             assert "/" not in f["name"]
             assert "\\" not in f["name"]
             assert ".." not in f["name"]
-
     def test_oversize_file_rejected(
         self, client: TestClient, monkeypatch: pytest.MonkeyPatch
     ) -> None:
@@ -246,8 +216,6 @@ class TestUpload:
         small_res = next(x for x in results if x["name"] == "small.md")
         assert big_res["ok"] is False
         assert small_res["ok"] is True
-
-
 class TestDelete:
     def _upload_md(self, client: TestClient, name: str = "doc.md") -> None:
         md = _make_md_bytes()
@@ -282,7 +250,6 @@ class TestDelete:
         assert body["files"] == []
         assert body["ready"] is False
 
-
 class TestSamples:
     def test_post_samples(self, client: TestClient) -> None:
         """POST /api/samples loads sample notes and returns a non-empty file list."""
@@ -292,7 +259,6 @@ class TestSamples:
         # At least one sample should be loaded if notes dir has md files
         # (we allow 0 files if notes dir is empty in the test environment)
         assert isinstance(body["files"], list)
-
 
 class TestChat:
     def _upload_pdf_md(self, client: TestClient) -> None:
@@ -450,8 +416,6 @@ class TestChat:
         # Token events should have been emitted
         token_events = [e for e in events if e["type"] == "token"]
         assert len(token_events) > 0
-
-
 class TestCORS:
     def test_allowed_origin_preflight(self, client: TestClient) -> None:
         """OPTIONS with allowed origin returns the allow-origin header."""

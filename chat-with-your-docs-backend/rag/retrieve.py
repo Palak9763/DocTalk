@@ -427,6 +427,7 @@ class Reranker:
         self.max_length = max_length
         self._model: Any = None
         self._lock = threading.Lock()
+        self._cache: dict[tuple[str, str], float] = {}
 
     @property
     def loaded(self) -> bool:
@@ -458,23 +459,33 @@ class Reranker:
         if not idxs:
             return []
 
-        model = self.load()
-        pairs = [[query, chunks[i].text] for i in idxs]
-        raw_scores = model.predict(pairs, batch_size=16, show_progress_bar=False)
+        needed_indices: list[int] = []
+        needed_pairs: list[list[str]] = []
+        with self._lock:
+            for i in idxs:
+                key = (query, chunks[i].id)
+                if key not in self._cache:
+                    needed_indices.append(i)
+                    needed_pairs.append([query, chunks[i].text])
 
-        scores_arr = np.asarray(raw_scores, dtype=float).ravel()
-        if len(scores_arr) == 0:
-            return []
+        if needed_pairs:
+            model = self.load()
+            raw_scores = model.predict(needed_pairs, batch_size=16, show_progress_bar=False)
 
-        # If any raw scores fall outside [0, 1] (logits), apply sigmoid
-        if np.any(scores_arr < 0.0) or np.any(scores_arr > 1.0):
-            scores_arr = np.where(
-                scores_arr >= 0,
-                1.0 / (1.0 + np.exp(-scores_arr)),
-                np.exp(scores_arr) / (1.0 + np.exp(scores_arr)),
-            )
+            scores_arr = np.asarray(raw_scores, dtype=float).ravel()
+            if len(scores_arr) > 0 and (np.any(scores_arr < 0.0) or np.any(scores_arr > 1.0)):
+                scores_arr = np.where(
+                    scores_arr >= 0,
+                    1.0 / (1.0 + np.exp(-scores_arr)),
+                    np.exp(scores_arr) / (1.0 + np.exp(scores_arr)),
+                )
 
-        return [float(s) for s in scores_arr]
+            with self._lock:
+                for idx, s in zip(needed_indices, scores_arr):
+                    self._cache[(query, chunks[idx].id)] = float(s)
+
+        with self._lock:
+            return [self._cache[(query, chunks[i].id)] for i in idxs]
 
     def rerank_scored(
         self,

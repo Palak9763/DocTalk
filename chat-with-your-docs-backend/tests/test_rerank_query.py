@@ -1,17 +1,13 @@
 """Unit tests for Phase 3: Reranker and Query processing (rewrite, expansion, HyDE)."""
-
 import math
 from pathlib import Path
 import sys
 import tempfile
 from typing import Any
-
 import numpy as np
-
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-
 from rag.config import NOTES_DIR
 from rag.ingest import Chunk, load_chunks
 from rag import llm
@@ -19,21 +15,17 @@ from rag.query import expand_query, hyde_passage, rewrite_query
 from rag.retrieve import Reranker, Retriever
 from tests.fakes import FakeClient, install, install_fake_reranker, restore_reranker
 
-
 def test_reranker_lazy_load_and_fake_scorer() -> None:
     """Verify Reranker is lazy-loaded, respects fake scorer, sorts descending, and handles empty idxs."""
     reranker = Reranker()
     # Lazy load check: model is not yet loaded in memory
     assert reranker.loaded is False
-
     # Install fake scorer for testing without downloading or loading models
     install_fake_reranker()
-
     # Empty idxs returns []
     assert reranker.score("any query", [], []) == []
     assert reranker.rerank_scored("any query", [], [], top_k=5) == []
     assert reranker.rerank("any query", [], [], top_k=5) == []
-
     # Test scoring with sample chunks
     chunks = [
         Chunk(id="c0", source="notes.md", section="Backprop", text="backpropagation gradient chain rule calculation", page=1),
@@ -57,7 +49,6 @@ def test_reranker_lazy_load_and_fake_scorer() -> None:
     top_idxs = reranker.rerank("backpropagation gradient", chunks, idxs, top_k=2)
     assert top_idxs == [scored[0][0], scored[1][0]]
 
-
 def test_reranker_sigmoid_path() -> None:
     """Verify sigmoid transformation on raw logits outside [0, 1] preserves ranking."""
     restore_reranker()
@@ -68,8 +59,6 @@ def test_reranker_sigmoid_path() -> None:
             return np.array([-3.0, 0.0, 4.0])
 
     reranker.load = lambda: DummyCrossEncoder()  # type: ignore[method-assign]
-
-
     dummy_chunks = [
         Chunk(id="d0", source="doc.md", section="A", text="doc A", page=1),
         Chunk(id="d1", source="doc.md", section="B", text="doc B", page=1),
@@ -88,7 +77,6 @@ def test_reranker_sigmoid_path() -> None:
     expected_pos4 = 1.0 / (1.0 + math.exp(-4.0))
     assert math.isclose(scores[0], expected_neg3, rel_tol=1e-4)
     assert math.isclose(scores[2], expected_pos4, rel_tol=1e-4)
-
 
 def test_rewrite_query(tmp_path: Path | None = None) -> None:
     """Verify rewrite_query behaviour on empty history, pronoun resolution, prefix/chatter stripping, and fallbacks."""
@@ -134,7 +122,6 @@ def test_rewrite_query(tmp_path: Path | None = None) -> None:
         )
         res5 = rewrite_query("why does it need?", history=history)
         assert res5 == "why does it need?"
-
 
 def test_expand_query(tmp_path: Path | None = None) -> None:
     """Verify expand_query handles JSON objects, bare lists, fenced JSON, duplicates, echoes, and respects n."""
@@ -187,7 +174,6 @@ def test_expand_query(tmp_path: Path | None = None) -> None:
         finally:
             llm.chat_json = original_chat_json
 
-
 def test_hyde_passage(tmp_path: Path | None = None) -> None:
     """Verify hyde_passage returns hypothetical lecture text and returns empty string on failure."""
     with tempfile.TemporaryDirectory() as td:
@@ -206,7 +192,6 @@ def test_hyde_passage(tmp_path: Path | None = None) -> None:
         # Failure returns ""
         fake.canned_chat = ""
         assert hyde_passage("any query") == ""
-
 
 def test_integration_sample_corpus(tmp_path: Path | None = None) -> None:
     """Integration check: load notes, search for 'dying ReLU problem', and rerank top-5 with fake reranker."""
@@ -232,8 +217,7 @@ def test_integration_sample_corpus(tmp_path: Path | None = None) -> None:
         top_chunk = chunks[top_scored[0][0]]
         section_and_text = f"{top_chunk.section} {top_chunk.text}".lower()
         assert "relu" in section_and_text, f"Expected top chunk to mention ReLU, got section: {top_chunk.section}"
-
-
+        
 if __name__ == "__main__":
     test_reranker_lazy_load_and_fake_scorer()
     test_reranker_sigmoid_path()

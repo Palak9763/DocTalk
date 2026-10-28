@@ -1,5 +1,4 @@
 """Authentication and Per-User Data Isolation Tests.
-
 Tests cover:
 - Signup, login, me, and state flow.
 - Duplicate email handling and case insensitivity.
@@ -13,23 +12,17 @@ Tests cover:
 - Change-password lifecycle.
 - CORS preflight with Authorization header.
 """
-
 from __future__ import annotations
-
 import io
 import json
 from pathlib import Path
 import sqlite3
 import time
 from typing import Any, Iterator
-
 import jwt
 import pytest
 from fastapi.testclient import TestClient
-
 from tests.fakes import FakeClient, install_fake_reranker, restore_reranker
-
-
 @pytest.fixture()
 def auth_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
     """Isolate DB, library, index, and JWT secrets in temporary directories."""
@@ -44,13 +37,11 @@ def auth_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
 
     lib.mkdir(parents=True, exist_ok=True)
     idx.mkdir(parents=True, exist_ok=True)
-
     monkeypatch.setattr(cfg, "LIBRARY_DIR", lib)
     monkeypatch.setattr(cfg, "INDEX_DIR", idx)
     monkeypatch.setattr(auth, "AUTH_DB_PATH", db_file)
     monkeypatch.setattr(auth, "JWT_SECRET", jwt_secret)
     monkeypatch.setenv("JWT_SECRET", jwt_secret)
-
     auth.init_auth_db(db_file)
     auth.reset_rate_limiters()
     auth.reset_clock()
@@ -63,7 +54,6 @@ def auth_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
         "secret": jwt_secret,
     }
 
-
 @pytest.fixture()
 def fake_llm(monkeypatch: pytest.MonkeyPatch, auth_env: dict[str, Any]) -> FakeClient:
     from rag import config as cfg, llm
@@ -73,7 +63,6 @@ def fake_llm(monkeypatch: pytest.MonkeyPatch, auth_env: dict[str, Any]) -> FakeC
     llm.reset_embedding_cache()
     return fc
 
-
 @pytest.fixture()
 def client(auth_env: dict[str, Any], fake_llm: FakeClient) -> Iterator[TestClient]:
     install_fake_reranker()
@@ -82,11 +71,9 @@ def client(auth_env: dict[str, Any], fake_llm: FakeClient) -> Iterator[TestClien
         yield tc
     restore_reranker()
 
-
 # ---------------------------------------------------------------------------
 # Test Cases
 # ---------------------------------------------------------------------------
-
 class TestAuthLifecycle:
     def test_signup_login_me_state_roundtrip(self, client: TestClient) -> None:
         """Signup then login then /me round trip; token works for /api/state."""
@@ -107,7 +94,6 @@ class TestAuthLifecycle:
         assert "password_hash" not in data["user"]
 
         token = data["token"]
-
         # 2. Login
         login_res = client.post(
             "/api/auth/login",
@@ -142,7 +128,6 @@ class TestAuthLifecycle:
         """POST /api/auth/logout returns 204."""
         res = client.post("/api/auth/logout")
         assert res.status_code == 204
-
 
 class TestValidationAndDuplicates:
     def test_duplicate_email_and_case_insensitivity(self, client: TestClient) -> None:
@@ -190,7 +175,6 @@ class TestValidationAndDuplicates:
             json={"name": "Bad Email", "email": "not-an-email", "password": "validpassword123"},
         )
         assert r_email.status_code == 422
-
 
 class TestLoginSecurityAndRateLimiting:
     def test_wrong_password_and_unknown_email_identical_401(self, client: TestClient) -> None:
@@ -252,8 +236,6 @@ class TestLoginSecurityAndRateLimiting:
             json={"email": "dave@example.com", "password": "validpassword123"},
         )
         assert ok_res.status_code == 200
-
-
 class TestTokenValidation:
     def test_protected_endpoints_reject_invalid_tokens(self, client: TestClient) -> None:
         """Protected endpoints return 401 without token, garbage token, expired, wrong secret, alg 'none'."""
@@ -293,8 +275,6 @@ class TestTokenValidation:
         )
         r_none_alg = client.get("/api/state", headers={"Authorization": f"Bearer {none_token}"})
         assert r_none_alg.status_code == 401
-
-
 class TestDatabaseSecurity:
     def test_argon2_hash_and_no_plaintext_in_db(self, client: TestClient, auth_env: dict[str, Any]) -> None:
         """password_hash in the DB starts with "$argon2" and plaintext password appears nowhere in DB file."""
@@ -319,8 +299,6 @@ class TestDatabaseSecurity:
         # Verify plaintext does not appear in binary database file
         raw_db_bytes = db_path.read_bytes()
         assert secret_password.encode("utf-8") not in raw_db_bytes
-
-
 class TestPerUserIsolation:
     def test_user_data_isolation(self, client: TestClient) -> None:
         """User A uploads file; User B's state shows none; B deleting A's file -> 404; B cannot retrieve A's text."""
@@ -384,8 +362,6 @@ class TestPerUserIsolation:
         state_a = client.get("/api/state", headers={"Authorization": f"Bearer {token_a}"})
         assert state_a.status_code == 200
         assert any(f["name"] == "quantum.md" for f in state_a.json()["files"])
-
-
 class TestAdminPrivileges:
     def test_admin_emails_and_admin_users_endpoint(self, client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
         """Admin email in ADMIN_EMAILS becomes admin; GET /api/admin/users is 403 for user and 200 for admin."""
@@ -421,8 +397,6 @@ class TestAdminPrivileges:
         for u in user_list:
             assert "password_hash" not in u
             assert "file_count" in u
-
-
 class TestPasswordChange:
     def test_change_password_flow(self, client: TestClient) -> None:
         """change-password: wrong current password -> 400; success -> old password fails, new works."""
@@ -462,8 +436,6 @@ class TestPasswordChange:
             json={"email": "george@example.com", "password": "new_password_2"},
         )
         assert r_new_login.status_code == 200
-
-
 class TestCORS:
     def test_cors_preflight_allows_authorization(self, client: TestClient) -> None:
         """CORS preflight still allows the Authorization header from http://localhost:5173."""

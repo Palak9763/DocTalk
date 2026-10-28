@@ -2,7 +2,6 @@
 -- DocTalk Supabase Schema & pgvector Setup
 -- Run this in your Supabase Dashboard: SQL Editor -> New Query -> Run
 -- ==============================================================================
-
 -- 1. Enable the pgvector extension for dense vector similarity search
 CREATE EXTENSION IF NOT EXISTS vector;
 
@@ -78,3 +77,6 @@ $$;
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('doctalk-documents', 'doctalk-documents', false)
 ON CONFLICT (id) DO NOTHING;
+
+
+

@@ -165,8 +165,7 @@
     "gold": [
       ["04_rag.md", "Document Ingestion, Sectional Chunking, and Bi-Encoders"],
       ["04_rag.md", "Hybrid Retrieval and Reciprocal Rank Fusion"]
-    ]
-  ,
+    ],
     "reference": "Bi-encoders encode documents and queries into independent dense vectors, while BM25 handles sparse lexical matches; Reciprocal Rank Fusion (RRF) harmonizes candidates from both incompatible distributions into a unified top-50 pool.",
     "type": "multi_hop",
     "needs_retrieval": true
@@ -247,6 +246,124 @@
     "gold": [],
     "reference": "",
     "type": "unanswerable",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q22",
+    "question": "Why does logistic regression use Maximum Likelihood Estimation instead of Ordinary Least Squares for parameter estimation?",
+    "history": [],
+    "gold": [
+      ["01_regression.md", "Logistic Regression and Cross-Entropy Loss"]
+    ],
+    "reference": "Composing squared error with the non-linear sigmoid activation function produces a non-convex loss surface, so logistic regression relies on Maximum Likelihood Estimation (MLE) to minimize negative log-likelihood via convex optimization.",
+    "type": "factual",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q23",
+    "question": "What is the primary motivation for using multiple parallel attention heads in Multi-Head Attention rather than a single head?",
+    "history": [],
+    "gold": [
+      ["03_transformers.md", "Multi-Head Attention Mechanisms"]
+    ],
+    "reference": "Single-head attention averages semantic relationships across a single subspace, potentially blurring disparate linguistic dependencies, whereas Multi-Head Attention projects queries, keys, and values through independent linear weights across multiple subspaces.",
+    "type": "factual",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q24",
+    "question": "How do doubled variance adjustments in parameter initialization protect asymmetrical half-wave rectification units from numerical decay?",
+    "history": [],
+    "gold": [
+      ["02_neural_networks.md", "Vanishing Gradients and Xavier/Glorot Initialization"]
+    ],
+    "reference": "For asymmetric rectifiers like ReLU, He (Kaiming) initialization doubles the weight variance to Var(W) = 2 / n_in, preventing activation variances from collapsing toward zero across sequential layers.",
+    "type": "vocabulary_gap",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q25",
+    "question": "Why are pairwise cross-attention models computationally prohibitive for scanning full document archives directly?",
+    "history": [],
+    "gold": [
+      ["04_rag.md", "Cross-Encoder Reranking and Self-RAG Routing"]
+    ],
+    "reference": "Cross-encoders pass concatenated query-passage token pairs through full bidirectional self-attention layers, requiring substantial compute per pair, so scoring is restricted to top candidates retrieved by bi-encoders.",
+    "type": "vocabulary_gap",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q26",
+    "question": "What is the binary cross-entropy loss formula L = -[y log(p) + (1-y) log(1-p)] in logistic regression?",
+    "history": [],
+    "gold": [
+      ["01_regression.md", "Logistic Regression and Cross-Entropy Loss"]
+    ],
+    "reference": "Minimizing the negative log-likelihood in logistic regression yields the binary cross-entropy loss: L = -[y log(p) + (1-y) log(1-p)].",
+    "type": "exact_term",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q27",
+    "question": "What sinusoidal frequency equations define PE(pos, 2i) = sin(pos / 10000^(2i/d_model)) and PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))?",
+    "history": [],
+    "gold": [
+      ["03_transformers.md", "Positional Encoding Formulations"]
+    ],
+    "reference": "Sinusoidal positional encodings use deterministic equations PE(pos, 2i) = sin(pos / 10000^(2i/d_model)) and PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model)) across dimension channels.",
+    "type": "exact_term",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q28",
+    "question": "How are their individual outputs combined before passing through the final projection matrix W_O?",
+    "history": [
+      {
+        "role": "user",
+        "content": "How do attention heads operate in Transformers?"
+      },
+      {
+        "role": "assistant",
+        "content": "Each attention head projects queries, keys, and values into independent subspaces using linear matrices."
+      }
+    ],
+    "gold": [
+      ["03_transformers.md", "Multi-Head Attention Mechanisms"]
+    ],
+    "reference": "The individual head output matrices are concatenated along the feature axis: MultiHead(Q, K, V) = Concat(Head_1, ..., Head_h) W_O.",
+    "type": "follow_up",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q29",
+    "question": "Why do variants like Leaky ReLU and GELU prevent them from becoming permanently inactive?",
+    "history": [
+      {
+        "role": "user",
+        "content": "What is the Rectified Linear Unit activation function?"
+      },
+      {
+        "role": "assistant",
+        "content": "ReLU is defined as max(0, z) and maintains a constant derivative of 1 for positive activations."
+      }
+    ],
+    "gold": [
+      ["02_neural_networks.md", "Activation Functions and the Dying ReLU Problem"]
+    ],
+    "reference": "Variants such as Leaky ReLU and GELU alleviate dead zones by providing non-zero slopes for negative domains so neurons do not become permanently inactive.",
+    "type": "follow_up",
+    "needs_retrieval": true
+  },
+  {
+    "id": "q30",
+    "question": "How does Self-RAG use adaptive routing and relevance grading to guard against hallucinations, and how does backpropagation enable neural model optimization?",
+    "history": [],
+    "gold": [
+      ["04_rag.md", "Cross-Encoder Reranking and Self-RAG Routing"],
+      ["02_neural_networks.md", "Backpropagation and the Computational Graph"]
+    ],
+    "reference": "Self-RAG uses adaptive routing to bypass retrieval for chit-chat, evaluates retrieved chunks via relevance grading, and runs groundedness checks; backpropagation applies the chain rule backward through computational graphs to optimize neural network weights.",
+    "type": "multi_hop",
     "needs_retrieval": true
   }
 ]

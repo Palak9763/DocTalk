@@ -1,10 +1,8 @@
 """Unit tests for rag/ingest.py and rag/llm.py."""
-
 import json
 from pathlib import Path
 import sys
 import tempfile
-
 from docx import Document
 import numpy as np
 
@@ -17,17 +15,13 @@ from rag import config
 from rag.ingest import Chunk, chunk_text, load_chunks, load_document
 from rag.llm import chat, chat_json, chat_stream, embed, parse_json, reset_embedding_cache
 from tests.fakes import install, make_pdf
-
-
 def test_chunk_text() -> None:
     """Verify sliding-window chunking, exact overlap, and error conditions."""
     words = [f"w{i}" for i in range(250)]
     text = " ".join(words)
     chunk_w, overlap = 50, 15
-
     chunks = chunk_text(text, words=chunk_w, overlap=overlap)
     assert len(chunks) > 1
-
     # Verify consecutive chunks share exactly `overlap` words
     for i in range(len(chunks) - 1):
         c1_words = chunks[i].split()
@@ -59,7 +53,6 @@ def test_markdown_ingest(tmp_path: Path) -> None:
 
 # Section Alpha
 Paragraph discussing topic alpha with sufficient detail.
-
 ## Section Beta
 Detailed breakdown of topic beta.
 """
@@ -68,7 +61,6 @@ Detailed breakdown of topic beta.
 
     chunks = load_document(file_path, words=40, overlap=10)
     assert len(chunks) >= 3
-
     # Check sections detected
     sections = [c.section for c in chunks]
     assert "Introduction" in sections
@@ -89,7 +81,6 @@ Detailed breakdown of topic beta.
         assert not c.body.startswith(header)
         assert c.page is None
 
-
 def test_docx_and_pdf(tmp_path: Path) -> None:
     """Verify DOCX headings and tables, PDF page tracking, and error cases."""
     # 1. Test DOCX
@@ -101,7 +92,6 @@ def test_docx_and_pdf(tmp_path: Path) -> None:
     table.cell(0, 1).text = "Latency"
     table.cell(1, 0).text = "Dense"
     table.cell(1, 1).text = "5ms"
-
     docx_path = tmp_path / "spec.docx"
     doc.save(str(docx_path))
 
@@ -142,7 +132,6 @@ def test_docx_and_pdf(tmp_path: Path) -> None:
     except ValueError as exc:
         assert "Unsupported file format" in str(exc)
 
-
 def test_load_chunks_sample_corpus() -> None:
     """Verify sample corpus loads into > 15 chunks with non-empty bodies."""
     chunks = load_chunks(config.NOTES_DIR)
@@ -150,7 +139,6 @@ def test_load_chunks_sample_corpus() -> None:
     for c in chunks:
         assert len(c.body.strip()) > 0
         assert c.source.endswith(".md")
-
 
 def test_parse_json() -> None:
     """Verify parse_json handles plain, fenced, chatter, and invalid formats."""
@@ -175,7 +163,6 @@ def test_parse_json() -> None:
     assert parse_json("[1, 2, 3]") == {}
     assert parse_json('[{"score": 0.95}]') == {}
 
-
 def test_embed_and_caching(tmp_path: Path) -> None:
     """Verify embedding unit length, two-tier caching, and corrupt cache resilience."""
     client = install(tmp_path)
@@ -189,17 +176,14 @@ def test_embed_and_caching(tmp_path: Path) -> None:
     assert v1.shape == (2, 128)
     norms = np.linalg.norm(v1, axis=1)
     assert np.allclose(norms, 1.0, atol=1e-5)
-
     # Identical text gives identical vectors
     v_single = embed([texts[0]], kind="document")
     assert np.allclose(v1[0], v_single[0], atol=1e-5)
-
     # Verify document cache written to disk
     cache_path = tmp_path / "embed_cache.json"
     assert cache_path.is_file()
     disk_data = json.loads(cache_path.read_text(encoding="utf-8"))
     assert len(disk_data) == 2
-
     # 2. Query embeddings are NOT written to disk
     call_count_before = len(client.calls)
     q_vec = embed(["Search query for transformers"], kind="query")
@@ -228,7 +212,6 @@ def test_embed_and_caching(tmp_path: Path) -> None:
     new_data = json.loads(cache_path.read_text(encoding="utf-8"))
     assert len(new_data) == 2
 
-
 def main() -> None:
     """Run all tests directly with plain asserts."""
     print("Running test_chunk_text...")
@@ -256,7 +239,5 @@ def main() -> None:
         test_embed_and_caching(tpath)
 
     print("All ingest and llm tests passed successfully!")
-
-
 if __name__ == "__main__":
     main()

@@ -5,7 +5,7 @@ query rewriting, query expansion, HyDE, and Self-RAG.
 
 CLI:
     python -m eval.run_eval --mode retrieval|full [--docs PATH] [--dataset PATH]
-                            [--configs a,b,c] [--limit N] [--judge MODEL]
+                            [--configs a,b,c] [--limit N] [--judge MODEL] [--seed N]
 """
 
 from __future__ import annotations
@@ -20,6 +20,7 @@ import sys
 import time
 from typing import Any
 
+import numpy as np
 from tqdm import tqdm
 
 from rag import config, llm
@@ -220,6 +221,111 @@ def count_llm_calls(cfg: PipelineConfig, trace: dict[str, Any], has_history: boo
 
 
 # ---------------------------------------------------------------------------
+# Bootstrap Resampling Confidence Intervals
+# ---------------------------------------------------------------------------
+
+
+def compute_bootstrap_ci(
+    diffs: list[float],
+    n_resamples: int = 1000,
+    seed: int = 42,
+    alpha: float = 0.05,
+) -> tuple[float, float, float]:
+    """Compute mean difference and (1 - alpha) bootstrap percentile CI.
+
+    Args:
+        diffs: Paired differences for a metric across queries.
+        n_resamples: Number of bootstrap iterations (default: 1000).
+        seed: Random seed for deterministic reproducibility.
+        alpha: Two-tailed significance level (default 0.05 for 95% CI).
+
+    Returns:
+        (mean_difference, ci_lower, ci_upper)
+    """
+    if not diffs:
+        return 0.0, 0.0, 0.0
+    arr = np.asarray(diffs, dtype=float)
+    mean_diff = float(np.mean(arr))
+    if len(arr) == 1:
+        return mean_diff, mean_diff, mean_diff
+
+    rng = np.random.default_rng(seed)
+    n = len(arr)
+    # Resample with replacement
+    indices = rng.integers(0, n, size=(n_resamples, n))
+    boot_means = np.mean(arr[indices], axis=1)
+
+    ci_lower = float(np.percentile(boot_means, 100.0 * (alpha / 2.0)))
+    ci_upper = float(np.percentile(boot_means, 100.0 * (1.0 - alpha / 2.0)))
+    return mean_diff, ci_lower, ci_upper
+
+
+def calculate_pairwise_bootstrap_cis(
+    config_names: list[str],
+    results_per_config: dict[str, list[dict[str, Any]]],
+    seed: int = 42,
+) -> dict[str, dict[str, Any]]:
+    """Compute 1000-sample bootstrap CIs for MRR and recall@5 vs previous config row."""
+    ci_results: dict[str, dict[str, Any]] = {}
+
+    for idx, name in enumerate(config_names):
+        if idx == 0:
+            ci_results[name] = {
+                "prev_config": None,
+                "mrr": {"diff": 0.0, "ci_low": 0.0, "ci_high": 0.0, "str": "baseline"},
+                "recall@5": {"diff": 0.0, "ci_low": 0.0, "ci_high": 0.0, "str": "baseline"},
+            }
+            continue
+
+        prev_name = config_names[idx - 1]
+        curr_items = {
+            r["id"]: r
+            for r in results_per_config.get(name, [])
+            if not r.get("_skip") and not r.get("is_empty_gold") and not r.get("error")
+        }
+        prev_items = {
+            r["id"]: r
+            for r in results_per_config.get(prev_name, [])
+            if not r.get("_skip") and not r.get("is_empty_gold") and not r.get("error")
+        }
+
+        common_ids = sorted(list(set(curr_items.keys()) & set(prev_items.keys())))
+        mrr_diffs = [
+            curr_items[qid].get("mrr", 0.0) - prev_items[qid].get("mrr", 0.0)
+            for qid in common_ids
+        ]
+        rec_diffs = [
+            curr_items[qid].get("recall@5", 0.0) - prev_items[qid].get("recall@5", 0.0)
+            for qid in common_ids
+        ]
+
+        mrr_mean, mrr_low, mrr_high = compute_bootstrap_ci(
+            mrr_diffs, n_resamples=1000, seed=seed
+        )
+        rec_mean, rec_low, rec_high = compute_bootstrap_ci(
+            rec_diffs, n_resamples=1000, seed=seed + 1
+        )
+
+        ci_results[name] = {
+            "prev_config": prev_name,
+            "mrr": {
+                "diff": mrr_mean,
+                "ci_low": mrr_low,
+                "ci_high": mrr_high,
+                "str": f"{mrr_mean:+.3f} [CI {mrr_low:+.3f}, {mrr_high:+.3f}]",
+            },
+            "recall@5": {
+                "diff": rec_mean,
+                "ci_low": rec_low,
+                "ci_high": rec_high,
+                "str": f"{rec_mean:+.3f} [CI {rec_low:+.3f}, {rec_high:+.3f}]",
+            },
+        }
+
+    return ci_results
+
+
+# ---------------------------------------------------------------------------
 # Runner Execution
 # ---------------------------------------------------------------------------
 
@@ -231,6 +337,7 @@ def run_evaluation(
     selected_configs: list[str] | None = None,
     limit: int | None = None,
     judge_model: str | None = None,
+    seed: int = 42,
 ) -> tuple[dict[str, Any], str]:
     """Execute evaluation and return (raw_data_dict, markdown_report)."""
     docs_dir = Path(docs_path)
@@ -276,7 +383,7 @@ def run_evaluation(
     ragas_style.reset_judge_stats()
 
     print(f"\n[EVAL] Running Phase 7 Evaluation Suite [Mode: {mode.upper()}]")
-    print(f"Corpus Chunks: {len(chunks)} | Questions: {len(dataset)} | Configs: {len(config_names)}")
+    print(f"Corpus Chunks: {len(chunks)} | Questions: {len(dataset)} | Configs: {len(config_names)} | Seed: {seed}")
     if mode == "full":
         print(f"Judge Model: {judge_model or config.JUDGE_MODEL}")
     print("-" * 70)
@@ -351,16 +458,22 @@ def run_evaluation(
                     res_entry["decision_correct"] = (
                         1.0 if ans_result.used_retrieval == needs_retrieval else 0.0
                     )
-                    # Skipping accuracy: did it skip retrieval when not needed?
+                    # Skipping accuracy: did it skip retrieval when not needed, or skip wrongly?
                     if not needs_retrieval:
                         res_entry["skip_correct"] = (
                             1.0 if not ans_result.used_retrieval else 0.0
                         )
+                    else:
+                        res_entry["skip_wrong"] = (
+                            1.0 if not ans_result.used_retrieval else 0.0
+                        )
 
                     # Groundedness rate
-                    res_entry["grounded"] = (
-                        1.0 if trace.get("grounded") is True else 0.0
-                    )
+                    ground_res = trace.get("groundedness")
+                    if ground_res and isinstance(ground_res, dict):
+                        res_entry["grounded"] = 1.0 if ground_res.get("grounded") is True else 0.0
+                    else:
+                        res_entry["grounded"] = 1.0
 
                     # RAGAS-style judge metrics
                     ctx_texts = [c.text for c in ans_result.contexts]
@@ -410,13 +523,24 @@ def run_evaluation(
                 sum(dec_scores) / len(dec_scores) if dec_scores else 0.0
             )
 
-            skip_scores = [
+            skip_correct_scores = [
                 r["skip_correct"]
                 for r in cfg_results
                 if "skip_correct" in r and not r.get("error")
             ]
-            agg["skip_accuracy"] = (
-                sum(skip_scores) / len(skip_scores) if skip_scores else 1.0
+            agg["skipped_correctly_rate"] = (
+                sum(skip_correct_scores) / len(skip_correct_scores) if skip_correct_scores else 1.0
+            )
+            # Legacy alias
+            agg["skip_accuracy"] = agg["skipped_correctly_rate"]
+
+            skip_wrong_scores = [
+                r["skip_wrong"]
+                for r in cfg_results
+                if "skip_wrong" in r and not r.get("error")
+            ]
+            agg["skipped_wrongly_rate"] = (
+                sum(skip_wrong_scores) / len(skip_wrong_scores) if skip_wrong_scores else 0.0
             )
 
             ground_scores = [
@@ -469,6 +593,13 @@ def run_evaluation(
 
     judge_stats = ragas_style.get_judge_stats()
 
+    # Calculate bootstrap confidence intervals (1000 resamples, fixed seed)
+    bootstrap_ci = calculate_pairwise_bootstrap_cis(
+        config_names=config_names,
+        results_per_config=results_per_config,
+        seed=seed,
+    )
+
     # Build Markdown and Terminal reports
     report_md = _build_markdown_report(
         mode=mode,
@@ -480,6 +611,7 @@ def run_evaluation(
         config_summaries=config_summaries,
         type_summaries=type_summaries_per_config,
         judge_stats=judge_stats,
+        bootstrap_ci=bootstrap_ci,
     )
 
     # Save to eval/results/
@@ -502,8 +634,10 @@ def run_evaluation(
             "rerank_model": config.RERANK_MODEL,
             "judge_model": judge_model or config.JUDGE_MODEL,
             "judge_stats": judge_stats,
+            "seed": seed,
         },
         "config_summaries": config_summaries,
+        "bootstrap_ci": bootstrap_ci,
         "type_summaries": type_summaries_per_config,
         "raw_results": results_per_config,
     }
@@ -543,6 +677,7 @@ def _build_markdown_report(
     config_summaries: dict[str, dict[str, Any]],
     type_summaries: dict[str, dict[str, dict[str, Any]]],
     judge_stats: dict[str, int],
+    bootstrap_ci: dict[str, dict[str, Any]],
 ) -> str:
     """Generate human-readable GitHub Flavored Markdown evaluation report."""
     lines: list[str] = []
@@ -560,7 +695,7 @@ def _build_markdown_report(
 
     lines.append("")
     lines.append(
-        "> ⚠️ **Warning**: Small local judge models (e.g. 3B parameters) give noisy RAGAS-style scores and the evaluation dataset is compact (~20 items), so only large differences in metrics should be considered statistically meaningful."
+        "> ⚠️ **Warning**: Small local judge models (e.g. 3B parameters) give noisy RAGAS-style scores and the evaluation dataset is compact (~30 items), so only large differences in metrics should be considered statistically meaningful."
     )
     lines.append("")
 
@@ -569,7 +704,6 @@ def _build_markdown_report(
     lines.append("")
 
     if mode == "retrieval":
-        # Determine column maximums for bolding
         max_hit = max(
             (config_summaries[c].get("hit@5", 0.0) for c in config_names), default=0.0
         )
@@ -642,14 +776,15 @@ def _build_markdown_report(
         )
 
         lines.append(
-            "| Config | Hit@5 | Recall@5 | MRR | C-Prec | C-Rec | Faith | Relevancy | Skip Acc | Latency | Calls |"
+            "| Config | Pipeline Toggles | Hit@5 | Recall@5 | MRR | C-Prec | C-Rec | Faith | Relevancy | Dec Acc | Skip OK | Skip Err | Latency | Calls |"
         )
         lines.append(
-            "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"
+            "| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"
         )
 
         for name in config_names:
             s = config_summaries[name]
+            cfg, _ = CONFIG_MAP[name]
             hit = _bold_max(s.get("hit@5", 0.0), max_hit)
             rec = _bold_max(s.get("recall@5", 0.0), max_rec)
             mr = _bold_max(s.get("mrr", 0.0), max_mrr)
@@ -657,23 +792,57 @@ def _build_markdown_report(
             cr = _bold_max(s.get("context_recall", 0.0), max_crec)
             ft = _bold_max(s.get("faithfulness", 0.0), max_faith)
             ar = _bold_max(s.get("answer_relevancy", 0.0), max_rel)
-            sa = f"{s.get('skip_accuracy', 1.0):.2f}"
+            da = _bold_max(s.get("decision_accuracy", 0.0), max_acc)
+            sa = f"{s.get('skipped_correctly_rate', 1.0):.2f}"
+            se = f"{s.get('skipped_wrongly_rate', 0.0):.2f}"
             lat = f"{s.get('avg_latency_ms', 0.0):.0f} ms"
             calls = f"{s.get('avg_llm_calls', 0.0):.1f}"
 
             lines.append(
-                f"| `{name}` | {hit} | {rec} | {mr} | {cp} | {cr} | {ft} | {ar} | {sa} | {lat} | {calls} |"
+                f"| `{name}` | `{cfg.label()}` | {hit} | {rec} | {mr} | {cp} | {cr} | {ft} | {ar} | {da} | {sa} | {se} | {lat} | {calls} |"
             )
 
     lines.append("")
-    lines.append("### Marginal Technique Contributions")
+
+    # Bootstrap Confidence Intervals Table & Lines
+    lines.append("## 2. Bootstrap Confidence Intervals (vs Previous Row)")
+    lines.append("")
+    lines.append("1,000 bootstrap resamples, 95% percentile confidence intervals for paired metric deltas:")
+    lines.append("")
+    lines.append("| Config | Comparison | Δ MRR [95% CI] | Δ Recall@5 [95% CI] | What Changed |")
+    lines.append("| :--- | :--- | :---: | :---: | :--- |")
+
     for name in config_names:
+        ci_info = bootstrap_ci.get(name, {})
+        prev = ci_info.get("prev_config")
         _, desc = CONFIG_MAP[name]
-        lines.append(f"- **`{name}`**: {desc}")
+        if prev is None:
+            comp_str = "Baseline"
+            mrr_ci = "baseline"
+            rec_ci = "baseline"
+        else:
+            comp_str = f"vs `{prev}`"
+            mrr_ci = ci_info["mrr"]["str"]
+            rec_ci = ci_info["recall@5"]["str"]
+
+        lines.append(
+            f"| `{name}` | {comp_str} | `{mrr_ci}` | `{rec_ci}` | {desc} |"
+        )
+
+    lines.append("")
+    lines.append("### Key Delta Highlights:")
+    for name in config_names:
+        ci_info = bootstrap_ci.get(name, {})
+        prev = ci_info.get("prev_config")
+        if prev:
+            mrr_ci = ci_info["mrr"]["str"]
+            rec_ci = ci_info["recall@5"]["str"]
+            _, desc = CONFIG_MAP[name]
+            lines.append(f"- **`{name}` vs `{prev}`**: MRR: {mrr_ci} | Recall@5: {rec_ci} — *{desc}*")
     lines.append("")
 
     # Per Question Type Breakdown
-    lines.append("## 2. Retrieval Performance by Question Type")
+    lines.append("## 3. Retrieval Performance by Question Type")
     lines.append("")
 
     types_seen: list[str] = []
@@ -746,6 +915,12 @@ def main() -> None:
         default=None,
         help=f"Judge LLM model name (default: {config.JUDGE_MODEL})",
     )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Random seed for bootstrap resampling (default: 42)",
+    )
 
     args = parser.parse_args()
 
@@ -758,6 +933,7 @@ def main() -> None:
         selected_configs=selected,
         limit=args.limit,
         judge_model=args.judge,
+        seed=args.seed,
     )
 
 
