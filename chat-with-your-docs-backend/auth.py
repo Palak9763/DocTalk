@@ -432,7 +432,6 @@ def _validate_password_complexity(v: str, email_candidate: str | None = None) ->
     if email_candidate and v.strip().lower() == email_candidate.strip().lower():
         raise ValueError("Password cannot be equal to email address.")
     return v
-
 class SignupRequest(BaseModel):
     name: str = Field(..., min_length=1, max_length=60)
     email: EmailStr
@@ -451,15 +450,12 @@ class SignupRequest(BaseModel):
     def check_password(cls, v: str, info: ValidationInfo) -> str:
         email = info.data.get("email") if info.data else None
         return _validate_password_complexity(v, str(email) if email else None)
-
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
-
 class ChangePasswordRequest(BaseModel):
     current_password: str
     new_password: str
-
 # ---------------------------------------------------------------------------
 # FastAPI Dependencies
 # ---------------------------------------------------------------------------

@@ -16,8 +16,6 @@ def _resolve_dir(env_val: str | None, default: Path) -> Path:
         return default
     p = Path(env_val)
     return p if p.is_absolute() else ROOT / p
-
-
 # Paths
 NOTES_DIR: Path = _resolve_dir(os.getenv("NOTES_DIR"), ROOT / "data" / "notes")  # Lecture notes source directory: local raw documents
 LIBRARY_DIR: Path = _resolve_dir(os.getenv("LIBRARY_DIR"), ROOT / "data" / "library")  # Uploaded document library: storage vs ephemeral handling
@@ -50,8 +48,6 @@ EMBED_PREFIX: dict[str, str] = {
     "document": "search_document: ",  # Prefix for indexing passage embeddings
     "query": "search_query: ",  # Prefix for search query embeddings
 }
-
-
 @dataclass
 class PipelineConfig:
     """Configurable toggles for RAG pipeline ablations and runtime tuning."""

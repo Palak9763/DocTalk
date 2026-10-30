@@ -1,0 +1,5538 @@
+{
+  "metadata": {
+    "mode": "retrieval",
+    "timestamp": "20261028_195209",
+    "docs_path": "D:\\DocTalk\\chat-with-your-docs-backend\\data\\notes",
+    "dataset_path": "D:\\DocTalk\\chat-with-your-docs-backend\\eval\\dataset.json",
+    "chunks_count": 16,
+    "questions_count": 30,
+    "chat_model": "qwen2.5:3b-instruct",
+    "embed_model": "nomic-embed-text",
+    "rerank_model": "BAAI/bge-reranker-v2-m3",
+    "judge_model": "qwen2.5:3b-instruct",
+    "judge_stats": {
+      "calls": 0,
+      "skips": 0
+    },
+    "seed": 42
+  },
+  "config_summaries": {
+    "sparse": {
+      "count": 24,
+      "skipped": 6,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.23333333333333336,
+      "mrr": 1.0,
+      "ndcg@5": 0.9948839714724187
+    },
+    "dense": {
+      "count": 24,
+      "skipped": 6,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.23333333333333336,
+      "mrr": 0.8993055555555555,
+      "ndcg@5": 0.9099923781348874
+    },
+    "hybrid": {
+      "count": 24,
+      "skipped": 6,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.23333333333333336,
+      "mrr": 0.9583333333333334,
+      "ndcg@5": 0.9692441461309548
+    },
+    "hybrid_rerank": {
+      "count": 24,
+      "skipped": 6,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.23333333333333336,
+      "mrr": 1.0,
+      "ndcg@5": 0.9966550328811744
+    },
+    "+ rewrite": {
+      "count": 24,
+      "skipped": 6,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.23333333333333336,
+      "mrr": 1.0,
+      "ndcg@5": 0.9966550328811744
+    },
+    "+ expand": {
+      "count": 24,
+      "skipped": 6,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.23333333333333336,
+      "mrr": 1.0,
+      "ndcg@5": 0.9966550328811744
+    },
+    "+ hyde": {
+      "count": 24,
+      "skipped": 6,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.23333333333333336,
+      "mrr": 1.0,
+      "ndcg@5": 0.9966550328811744
+    },
+    "full_selfrag": {
+      "count": 24,
+      "skipped": 6,
+      "needs_retrieval": 1.0,
+      "hit@5": 1.0,
+      "recall@5": 1.0,
+      "precision@5": 0.23333333333333336,
+      "mrr": 1.0,
+      "ndcg@5": 0.9966550328811744
+    }
+  },
+  "bootstrap_ci": {
+    "sparse": {
+      "prev_config": null,
+      "mrr": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "baseline"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "baseline"
+      }
+    },
+    "dense": {
+      "prev_config": "sparse",
+      "mrr": {
+        "diff": -0.10069444444444446,
+        "ci_low": -0.20138888888888892,
+        "ci_high": -0.020833333333333332,
+        "str": "-0.101 [CI -0.201, -0.021]"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      }
+    },
+    "hybrid": {
+      "prev_config": "dense",
+      "mrr": {
+        "diff": 0.05902777777777778,
+        "ci_low": 0.0,
+        "ci_high": 0.13203124999999993,
+        "str": "+0.059 [CI +0.000, +0.132]"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      }
+    },
+    "hybrid_rerank": {
+      "prev_config": "hybrid",
+      "mrr": {
+        "diff": 0.041666666666666664,
+        "ci_low": 0.0,
+        "ci_high": 0.10416666666666667,
+        "str": "+0.042 [CI +0.000, +0.104]"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      }
+    },
+    "+ rewrite": {
+      "prev_config": "hybrid_rerank",
+      "mrr": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      }
+    },
+    "+ expand": {
+      "prev_config": "+ rewrite",
+      "mrr": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      }
+    },
+    "+ hyde": {
+      "prev_config": "+ expand",
+      "mrr": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      }
+    },
+    "full_selfrag": {
+      "prev_config": "+ hyde",
+      "mrr": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      },
+      "recall@5": {
+        "diff": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "str": "+0.000 [CI +0.000, +0.000]"
+      }
+    }
+  },
+  "type_summaries": {
+    "sparse": {
+      "factual": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "exact_term": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "follow_up": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "multi_hop": {
+        "count": 4,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9693038288345124
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 3
+      },
+      "unanswerable": {
+        "count": 0,
+        "skipped": 3
+      }
+    },
+    "dense": {
+      "factual": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.8,
+        "ndcg@5": 0.8523719014285831
+      },
+      "exact_term": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "follow_up": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.7166666666666667,
+        "ndcg@5": 0.7861353116146785
+      },
+      "multi_hop": {
+        "count": 4,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9118202525052479
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 3
+      },
+      "unanswerable": {
+        "count": 0,
+        "skipped": 3
+      }
+    },
+    "hybrid": {
+      "factual": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.9,
+        "ndcg@5": 0.9261859507142916
+      },
+      "exact_term": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "follow_up": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.9,
+        "ndcg@5": 0.9261859507142916
+      },
+      "multi_hop": {
+        "count": 4,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 3
+      },
+      "unanswerable": {
+        "count": 0,
+        "skipped": 3
+      }
+    },
+    "hybrid_rerank": {
+      "factual": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "exact_term": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "follow_up": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "multi_hop": {
+        "count": 4,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9799301972870469
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 3
+      },
+      "unanswerable": {
+        "count": 0,
+        "skipped": 3
+      }
+    },
+    "+ rewrite": {
+      "factual": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "exact_term": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "follow_up": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "multi_hop": {
+        "count": 4,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9799301972870469
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 3
+      },
+      "unanswerable": {
+        "count": 0,
+        "skipped": 3
+      }
+    },
+    "+ expand": {
+      "factual": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "exact_term": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "follow_up": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "multi_hop": {
+        "count": 4,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9799301972870469
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 3
+      },
+      "unanswerable": {
+        "count": 0,
+        "skipped": 3
+      }
+    },
+    "+ hyde": {
+      "factual": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "exact_term": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "follow_up": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "multi_hop": {
+        "count": 4,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9799301972870469
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 3
+      },
+      "unanswerable": {
+        "count": 0,
+        "skipped": 3
+      }
+    },
+    "full_selfrag": {
+      "factual": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "vocabulary_gap": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "exact_term": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "follow_up": {
+        "count": 5,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      "multi_hop": {
+        "count": 4,
+        "skipped": 0,
+        "needs_retrieval": 1.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9799301972870469
+      },
+      "no_retrieval": {
+        "count": 0,
+        "skipped": 3
+      },
+      "unanswerable": {
+        "count": 0,
+        "skipped": 3
+      }
+    }
+  },
+  "raw_results": {
+    "sparse": [
+      {
+        "id": "q01",
+        "type": "factual",
+        "question": "Under what Gauss-Markov assumptions does Ordinary Least Squares produce the Best Linear Unbiased Estimator (BLUE)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#3.0",
+          "01_regression.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q02",
+        "type": "factual",
+        "question": "Why does scaled dot-product self-attention divide the query-key dot products by the square root of key projection dimension d_k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#3.0",
+          "04_rag.md#2.0",
+          "04_rag.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q03",
+        "type": "factual",
+        "question": "What is the primary operational advantage of reverse-mode automatic differentiation in backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q04",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients in the cost function keep statistical models from memorizing empirical training noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#3.0",
+          "02_neural_networks.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q05",
+        "type": "vocabulary_gap",
+        "question": "Why do certain threshold transfer units permanently cease updating during deep network optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#2.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q06",
+        "type": "vocabulary_gap",
+        "question": "How does injecting periodic wave frequencies preserve token ordering information across parallel sequence models?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "03_transformers.md#0.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q07",
+        "type": "exact_term",
+        "question": "What is the analytical normal equation formula w = (X^T X)^(-1) X^T y in OLS?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#2.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q08",
+        "type": "exact_term",
+        "question": "What exact variance formula Var(W) = 2 / (n_in + n_out) is used in Xavier Glorot initialization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#2.0",
+          "04_rag.md#2.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q09",
+        "type": "exact_term",
+        "question": "What formula defines RRF_Score(d) using rank smoothing parameter k in Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q10",
+        "type": "follow_up",
+        "question": "How does it reduce computational complexity compared to naive forward calculations?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q11",
+        "type": "follow_up",
+        "question": "How does it differ from Lasso in setting non-informative feature weights strictly to zero?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "02_neural_networks.md#2.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q12",
+        "type": "follow_up",
+        "question": "Why do they fail to capture exact lexical keywords and subtle syntactic conditions?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0",
+          "01_regression.md#1.0",
+          "03_transformers.md#2.0",
+          "04_rag.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q13",
+        "type": "multi_hop",
+        "question": "How does hybrid retrieval unify bi-encoder dense vectors with sparse inverted indices using Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q14",
+        "type": "multi_hop",
+        "question": "Compare vanishing gradient mitigation via Xavier initialization in deep networks with softmax scale stabilization via sqrt(d_k) in Transformers.",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#0.0",
+          "04_rag.md#2.0",
+          "02_neural_networks.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q15",
+        "type": "multi_hop",
+        "question": "How does ElasticNet combine L1 and L2 penalties, and when is standard OLS without penalties ill-conditioned?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q16",
+        "type": "no_retrieval",
+        "question": "Hello! What kind of questions can you answer about these lecture notes?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q17",
+        "type": "no_retrieval",
+        "question": "Thank you for explaining that so clearly, I appreciate your help!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q18",
+        "type": "no_retrieval",
+        "question": "Good afternoon! Could you say hi and let me know if you are ready?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q19",
+        "type": "unanswerable",
+        "question": "How does the dual Lagrangian formulation derive the margin boundaries for soft-margin Support Vector Machines (SVM)?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#0.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q20",
+        "type": "unanswerable",
+        "question": "What are the quantum gate circuit requirements for executing Shor's prime factorization algorithm?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "01_regression.md#0.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#2.0",
+          "01_regression.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q21",
+        "type": "unanswerable",
+        "question": "How does the PageRank random walk model handle dead ends and spider traps in web graphs?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#1.0",
+          "03_transformers.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q22",
+        "type": "factual",
+        "question": "Why does logistic regression use Maximum Likelihood Estimation instead of Ordinary Least Squares for parameter estimation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#0.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q23",
+        "type": "factual",
+        "question": "What is the primary motivation for using multiple parallel attention heads in Multi-Head Attention rather than a single head?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#0.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q24",
+        "type": "vocabulary_gap",
+        "question": "How do doubled variance adjustments in parameter initialization protect asymmetrical half-wave rectification units from numerical decay?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "04_rag.md#2.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q25",
+        "type": "vocabulary_gap",
+        "question": "Why are pairwise cross-attention models computationally prohibitive for scanning full document archives directly?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q26",
+        "type": "exact_term",
+        "question": "What is the binary cross-entropy loss formula L = -[y log(p) + (1-y) log(1-p)] in logistic regression?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#0.0",
+          "01_regression.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q27",
+        "type": "exact_term",
+        "question": "What sinusoidal frequency equations define PE(pos, 2i) = sin(pos / 10000^(2i/d_model)) and PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "04_rag.md#2.0",
+          "01_regression.md#1.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q28",
+        "type": "follow_up",
+        "question": "How are their individual outputs combined before passing through the final projection matrix W_O?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#1.0",
+          "04_rag.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q29",
+        "type": "follow_up",
+        "question": "Why do variants like Leaky ReLU and GELU prevent them from becoming permanently inactive?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q30",
+        "type": "multi_hop",
+        "question": "How does Self-RAG use adaptive routing and relevance grading to guard against hallucinations, and how does backpropagation enable neural model optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0",
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "04_rag.md#0.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#1.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.8772153153380493
+      }
+    ],
+    "dense": [
+      {
+        "id": "q01",
+        "type": "factual",
+        "question": "Under what Gauss-Markov assumptions does Ordinary Least Squares produce the Best Linear Unbiased Estimator (BLUE)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#0.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q02",
+        "type": "factual",
+        "question": "Why does scaled dot-product self-attention divide the query-key dot products by the square root of key projection dimension d_k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0",
+          "03_transformers.md#2.0",
+          "01_regression.md#3.0",
+          "04_rag.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q03",
+        "type": "factual",
+        "question": "What is the primary operational advantage of reverse-mode automatic differentiation in backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q04",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients in the cost function keep statistical models from memorizing empirical training noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#2.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q05",
+        "type": "vocabulary_gap",
+        "question": "Why do certain threshold transfer units permanently cease updating during deep network optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q06",
+        "type": "vocabulary_gap",
+        "question": "How does injecting periodic wave frequencies preserve token ordering information across parallel sequence models?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "04_rag.md#3.0",
+          "04_rag.md#2.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q07",
+        "type": "exact_term",
+        "question": "What is the analytical normal equation formula w = (X^T X)^(-1) X^T y in OLS?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q08",
+        "type": "exact_term",
+        "question": "What exact variance formula Var(W) = 2 / (n_in + n_out) is used in Xavier Glorot initialization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#3.0",
+          "01_regression.md#2.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q09",
+        "type": "exact_term",
+        "question": "What formula defines RRF_Score(d) using rank smoothing parameter k in Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "01_regression.md#3.0",
+          "04_rag.md#3.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q10",
+        "type": "follow_up",
+        "question": "How does it reduce computational complexity compared to naive forward calculations?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "03_transformers.md#3.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q11",
+        "type": "follow_up",
+        "question": "How does it differ from Lasso in setting non-informative feature weights strictly to zero?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q12",
+        "type": "follow_up",
+        "question": "Why do they fail to capture exact lexical keywords and subtle syntactic conditions?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "03_transformers.md#2.0",
+          "04_rag.md#1.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.3333333333333333,
+        "ndcg@5": 0.5
+      },
+      {
+        "id": "q13",
+        "type": "multi_hop",
+        "question": "How does hybrid retrieval unify bi-encoder dense vectors with sparse inverted indices using Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9197207891481876
+      },
+      {
+        "id": "q14",
+        "type": "multi_hop",
+        "question": "Compare vanishing gradient mitigation via Xavier initialization in deep networks with softmax scale stabilization via sqrt(d_k) in Transformers.",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.8503449055347546
+      },
+      {
+        "id": "q15",
+        "type": "multi_hop",
+        "question": "How does ElasticNet combine L1 and L2 penalties, and when is standard OLS without penalties ill-conditioned?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#3.0",
+          "01_regression.md#1.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.8772153153380493
+      },
+      {
+        "id": "q16",
+        "type": "no_retrieval",
+        "question": "Hello! What kind of questions can you answer about these lecture notes?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#0.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q17",
+        "type": "no_retrieval",
+        "question": "Thank you for explaining that so clearly, I appreciate your help!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#1.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q18",
+        "type": "no_retrieval",
+        "question": "Good afternoon! Could you say hi and let me know if you are ready?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q19",
+        "type": "unanswerable",
+        "question": "How does the dual Lagrangian formulation derive the margin boundaries for soft-margin Support Vector Machines (SVM)?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0",
+          "03_transformers.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q20",
+        "type": "unanswerable",
+        "question": "What are the quantum gate circuit requirements for executing Shor's prime factorization algorithm?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0",
+          "02_neural_networks.md#1.0",
+          "04_rag.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q21",
+        "type": "unanswerable",
+        "question": "How does the PageRank random walk model handle dead ends and spider traps in web graphs?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#2.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q22",
+        "type": "factual",
+        "question": "Why does logistic regression use Maximum Likelihood Estimation instead of Ordinary Least Squares for parameter estimation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#0.0",
+          "01_regression.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q23",
+        "type": "factual",
+        "question": "What is the primary motivation for using multiple parallel attention heads in Multi-Head Attention rather than a single head?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#0.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q24",
+        "type": "vocabulary_gap",
+        "question": "How do doubled variance adjustments in parameter initialization protect asymmetrical half-wave rectification units from numerical decay?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "02_neural_networks.md#2.0",
+          "04_rag.md#2.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      {
+        "id": "q25",
+        "type": "vocabulary_gap",
+        "question": "Why are pairwise cross-attention models computationally prohibitive for scanning full document archives directly?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      {
+        "id": "q26",
+        "type": "exact_term",
+        "question": "What is the binary cross-entropy loss formula L = -[y log(p) + (1-y) log(1-p)] in logistic regression?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q27",
+        "type": "exact_term",
+        "question": "What sinusoidal frequency equations define PE(pos, 2i) = sin(pos / 10000^(2i/d_model)) and PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#1.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q28",
+        "type": "follow_up",
+        "question": "How are their individual outputs combined before passing through the final projection matrix W_O?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#2.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.25,
+        "ndcg@5": 0.43067655807339306
+      },
+      {
+        "id": "q29",
+        "type": "follow_up",
+        "question": "Why do variants like Leaky ReLU and GELU prevent them from becoming permanently inactive?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q30",
+        "type": "multi_hop",
+        "question": "How does Self-RAG use adaptive routing and relevance grading to guard against hallucinations, and how does backpropagation enable neural model optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0",
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      }
+    ],
+    "hybrid": [
+      {
+        "id": "q01",
+        "type": "factual",
+        "question": "Under what Gauss-Markov assumptions does Ordinary Least Squares produce the Best Linear Unbiased Estimator (BLUE)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#0.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q02",
+        "type": "factual",
+        "question": "Why does scaled dot-product self-attention divide the query-key dot products by the square root of key projection dimension d_k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#3.0",
+          "04_rag.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q03",
+        "type": "factual",
+        "question": "What is the primary operational advantage of reverse-mode automatic differentiation in backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q04",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients in the cost function keep statistical models from memorizing empirical training noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q05",
+        "type": "vocabulary_gap",
+        "question": "Why do certain threshold transfer units permanently cease updating during deep network optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q06",
+        "type": "vocabulary_gap",
+        "question": "How does injecting periodic wave frequencies preserve token ordering information across parallel sequence models?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "04_rag.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q07",
+        "type": "exact_term",
+        "question": "What is the analytical normal equation formula w = (X^T X)^(-1) X^T y in OLS?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#3.0",
+          "02_neural_networks.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q08",
+        "type": "exact_term",
+        "question": "What exact variance formula Var(W) = 2 / (n_in + n_out) is used in Xavier Glorot initialization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#2.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q09",
+        "type": "exact_term",
+        "question": "What formula defines RRF_Score(d) using rank smoothing parameter k in Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q10",
+        "type": "follow_up",
+        "question": "How does it reduce computational complexity compared to naive forward calculations?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#3.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q11",
+        "type": "follow_up",
+        "question": "How does it differ from Lasso in setting non-informative feature weights strictly to zero?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "02_neural_networks.md#2.0",
+          "01_regression.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q12",
+        "type": "follow_up",
+        "question": "Why do they fail to capture exact lexical keywords and subtle syntactic conditions?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "03_transformers.md#2.0",
+          "04_rag.md#2.0",
+          "04_rag.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q13",
+        "type": "multi_hop",
+        "question": "How does hybrid retrieval unify bi-encoder dense vectors with sparse inverted indices using Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q14",
+        "type": "multi_hop",
+        "question": "Compare vanishing gradient mitigation via Xavier initialization in deep networks with softmax scale stabilization via sqrt(d_k) in Transformers.",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q15",
+        "type": "multi_hop",
+        "question": "How does ElasticNet combine L1 and L2 penalties, and when is standard OLS without penalties ill-conditioned?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "04_rag.md#1.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q16",
+        "type": "no_retrieval",
+        "question": "Hello! What kind of questions can you answer about these lecture notes?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "03_transformers.md#3.0",
+          "04_rag.md#1.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#0.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q17",
+        "type": "no_retrieval",
+        "question": "Thank you for explaining that so clearly, I appreciate your help!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#1.0",
+          "03_transformers.md#0.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q18",
+        "type": "no_retrieval",
+        "question": "Good afternoon! Could you say hi and let me know if you are ready?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q19",
+        "type": "unanswerable",
+        "question": "How does the dual Lagrangian formulation derive the margin boundaries for soft-margin Support Vector Machines (SVM)?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#0.0",
+          "04_rag.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q20",
+        "type": "unanswerable",
+        "question": "What are the quantum gate circuit requirements for executing Shor's prime factorization algorithm?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#2.0",
+          "01_regression.md#3.0",
+          "01_regression.md#0.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q21",
+        "type": "unanswerable",
+        "question": "How does the PageRank random walk model handle dead ends and spider traps in web graphs?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q22",
+        "type": "factual",
+        "question": "Why does logistic regression use Maximum Likelihood Estimation instead of Ordinary Least Squares for parameter estimation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#0.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q23",
+        "type": "factual",
+        "question": "What is the primary motivation for using multiple parallel attention heads in Multi-Head Attention rather than a single head?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q24",
+        "type": "vocabulary_gap",
+        "question": "How do doubled variance adjustments in parameter initialization protect asymmetrical half-wave rectification units from numerical decay?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "02_neural_networks.md#2.0",
+          "04_rag.md#2.0",
+          "01_regression.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      {
+        "id": "q25",
+        "type": "vocabulary_gap",
+        "question": "Why are pairwise cross-attention models computationally prohibitive for scanning full document archives directly?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q26",
+        "type": "exact_term",
+        "question": "What is the binary cross-entropy loss formula L = -[y log(p) + (1-y) log(1-p)] in logistic regression?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#0.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q27",
+        "type": "exact_term",
+        "question": "What sinusoidal frequency equations define PE(pos, 2i) = sin(pos / 10000^(2i/d_model)) and PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "01_regression.md#1.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#2.0",
+          "01_regression.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q28",
+        "type": "follow_up",
+        "question": "How are their individual outputs combined before passing through the final projection matrix W_O?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "03_transformers.md#2.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 0.5,
+        "ndcg@5": 0.6309297535714575
+      },
+      {
+        "id": "q29",
+        "type": "follow_up",
+        "question": "Why do variants like Leaky ReLU and GELU prevent them from becoming permanently inactive?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "04_rag.md#2.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q30",
+        "type": "multi_hop",
+        "question": "How does Self-RAG use adaptive routing and relevance grading to guard against hallucinations, and how does backpropagation enable neural model optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0",
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "04_rag.md#0.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      }
+    ],
+    "hybrid_rerank": [
+      {
+        "id": "q01",
+        "type": "factual",
+        "question": "Under what Gauss-Markov assumptions does Ordinary Least Squares produce the Best Linear Unbiased Estimator (BLUE)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q02",
+        "type": "factual",
+        "question": "Why does scaled dot-product self-attention divide the query-key dot products by the square root of key projection dimension d_k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0",
+          "03_transformers.md#2.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q03",
+        "type": "factual",
+        "question": "What is the primary operational advantage of reverse-mode automatic differentiation in backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q04",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients in the cost function keep statistical models from memorizing empirical training noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q05",
+        "type": "vocabulary_gap",
+        "question": "Why do certain threshold transfer units permanently cease updating during deep network optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "02_neural_networks.md#0.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q06",
+        "type": "vocabulary_gap",
+        "question": "How does injecting periodic wave frequencies preserve token ordering information across parallel sequence models?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q07",
+        "type": "exact_term",
+        "question": "What is the analytical normal equation formula w = (X^T X)^(-1) X^T y in OLS?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q08",
+        "type": "exact_term",
+        "question": "What exact variance formula Var(W) = 2 / (n_in + n_out) is used in Xavier Glorot initialization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "03_transformers.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q09",
+        "type": "exact_term",
+        "question": "What formula defines RRF_Score(d) using rank smoothing parameter k in Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q10",
+        "type": "follow_up",
+        "question": "How does it reduce computational complexity compared to naive forward calculations?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#0.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q11",
+        "type": "follow_up",
+        "question": "How does it differ from Lasso in setting non-informative feature weights strictly to zero?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q12",
+        "type": "follow_up",
+        "question": "Why do they fail to capture exact lexical keywords and subtle syntactic conditions?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0",
+          "03_transformers.md#2.0",
+          "04_rag.md#3.0",
+          "04_rag.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q13",
+        "type": "multi_hop",
+        "question": "How does hybrid retrieval unify bi-encoder dense vectors with sparse inverted indices using Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#3.0",
+          "04_rag.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q14",
+        "type": "multi_hop",
+        "question": "Compare vanishing gradient mitigation via Xavier initialization in deep networks with softmax scale stabilization via sqrt(d_k) in Transformers.",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q15",
+        "type": "multi_hop",
+        "question": "How does ElasticNet combine L1 and L2 penalties, and when is standard OLS without penalties ill-conditioned?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q16",
+        "type": "no_retrieval",
+        "question": "Hello! What kind of questions can you answer about these lecture notes?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#0.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#0.0",
+          "04_rag.md#1.0",
+          "01_regression.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q17",
+        "type": "no_retrieval",
+        "question": "Thank you for explaining that so clearly, I appreciate your help!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#2.0",
+          "02_neural_networks.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q18",
+        "type": "no_retrieval",
+        "question": "Good afternoon! Could you say hi and let me know if you are ready?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q19",
+        "type": "unanswerable",
+        "question": "How does the dual Lagrangian formulation derive the margin boundaries for soft-margin Support Vector Machines (SVM)?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#1.0",
+          "04_rag.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q20",
+        "type": "unanswerable",
+        "question": "What are the quantum gate circuit requirements for executing Shor's prime factorization algorithm?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#2.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q21",
+        "type": "unanswerable",
+        "question": "How does the PageRank random walk model handle dead ends and spider traps in web graphs?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "01_regression.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q22",
+        "type": "factual",
+        "question": "Why does logistic regression use Maximum Likelihood Estimation instead of Ordinary Least Squares for parameter estimation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#0.0",
+          "01_regression.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q23",
+        "type": "factual",
+        "question": "What is the primary motivation for using multiple parallel attention heads in Multi-Head Attention rather than a single head?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q24",
+        "type": "vocabulary_gap",
+        "question": "How do doubled variance adjustments in parameter initialization protect asymmetrical half-wave rectification units from numerical decay?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#2.0",
+          "01_regression.md#2.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q25",
+        "type": "vocabulary_gap",
+        "question": "Why are pairwise cross-attention models computationally prohibitive for scanning full document archives directly?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q26",
+        "type": "exact_term",
+        "question": "What is the binary cross-entropy loss formula L = -[y log(p) + (1-y) log(1-p)] in logistic regression?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "01_regression.md#0.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q27",
+        "type": "exact_term",
+        "question": "What sinusoidal frequency equations define PE(pos, 2i) = sin(pos / 10000^(2i/d_model)) and PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "04_rag.md#2.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q28",
+        "type": "follow_up",
+        "question": "How are their individual outputs combined before passing through the final projection matrix W_O?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q29",
+        "type": "follow_up",
+        "question": "Why do variants like Leaky ReLU and GELU prevent them from becoming permanently inactive?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q30",
+        "type": "multi_hop",
+        "question": "How does Self-RAG use adaptive routing and relevance grading to guard against hallucinations, and how does backpropagation enable neural model optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0",
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#1.0",
+          "04_rag.md#0.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9197207891481876
+      }
+    ],
+    "+ rewrite": [
+      {
+        "id": "q01",
+        "type": "factual",
+        "question": "Under what Gauss-Markov assumptions does Ordinary Least Squares produce the Best Linear Unbiased Estimator (BLUE)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q02",
+        "type": "factual",
+        "question": "Why does scaled dot-product self-attention divide the query-key dot products by the square root of key projection dimension d_k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0",
+          "03_transformers.md#2.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q03",
+        "type": "factual",
+        "question": "What is the primary operational advantage of reverse-mode automatic differentiation in backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q04",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients in the cost function keep statistical models from memorizing empirical training noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q05",
+        "type": "vocabulary_gap",
+        "question": "Why do certain threshold transfer units permanently cease updating during deep network optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "02_neural_networks.md#0.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q06",
+        "type": "vocabulary_gap",
+        "question": "How does injecting periodic wave frequencies preserve token ordering information across parallel sequence models?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q07",
+        "type": "exact_term",
+        "question": "What is the analytical normal equation formula w = (X^T X)^(-1) X^T y in OLS?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q08",
+        "type": "exact_term",
+        "question": "What exact variance formula Var(W) = 2 / (n_in + n_out) is used in Xavier Glorot initialization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "03_transformers.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q09",
+        "type": "exact_term",
+        "question": "What formula defines RRF_Score(d) using rank smoothing parameter k in Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q10",
+        "type": "follow_up",
+        "question": "How does it reduce computational complexity compared to naive forward calculations?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q11",
+        "type": "follow_up",
+        "question": "How does it differ from Lasso in setting non-informative feature weights strictly to zero?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q12",
+        "type": "follow_up",
+        "question": "Why do they fail to capture exact lexical keywords and subtle syntactic conditions?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q13",
+        "type": "multi_hop",
+        "question": "How does hybrid retrieval unify bi-encoder dense vectors with sparse inverted indices using Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#3.0",
+          "04_rag.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q14",
+        "type": "multi_hop",
+        "question": "Compare vanishing gradient mitigation via Xavier initialization in deep networks with softmax scale stabilization via sqrt(d_k) in Transformers.",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q15",
+        "type": "multi_hop",
+        "question": "How does ElasticNet combine L1 and L2 penalties, and when is standard OLS without penalties ill-conditioned?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q16",
+        "type": "no_retrieval",
+        "question": "Hello! What kind of questions can you answer about these lecture notes?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#0.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#0.0",
+          "04_rag.md#1.0",
+          "01_regression.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q17",
+        "type": "no_retrieval",
+        "question": "Thank you for explaining that so clearly, I appreciate your help!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#2.0",
+          "02_neural_networks.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q18",
+        "type": "no_retrieval",
+        "question": "Good afternoon! Could you say hi and let me know if you are ready?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q19",
+        "type": "unanswerable",
+        "question": "How does the dual Lagrangian formulation derive the margin boundaries for soft-margin Support Vector Machines (SVM)?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#1.0",
+          "04_rag.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q20",
+        "type": "unanswerable",
+        "question": "What are the quantum gate circuit requirements for executing Shor's prime factorization algorithm?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#2.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q21",
+        "type": "unanswerable",
+        "question": "How does the PageRank random walk model handle dead ends and spider traps in web graphs?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "01_regression.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q22",
+        "type": "factual",
+        "question": "Why does logistic regression use Maximum Likelihood Estimation instead of Ordinary Least Squares for parameter estimation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#0.0",
+          "01_regression.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q23",
+        "type": "factual",
+        "question": "What is the primary motivation for using multiple parallel attention heads in Multi-Head Attention rather than a single head?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q24",
+        "type": "vocabulary_gap",
+        "question": "How do doubled variance adjustments in parameter initialization protect asymmetrical half-wave rectification units from numerical decay?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#2.0",
+          "01_regression.md#2.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q25",
+        "type": "vocabulary_gap",
+        "question": "Why are pairwise cross-attention models computationally prohibitive for scanning full document archives directly?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q26",
+        "type": "exact_term",
+        "question": "What is the binary cross-entropy loss formula L = -[y log(p) + (1-y) log(1-p)] in logistic regression?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "01_regression.md#0.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q27",
+        "type": "exact_term",
+        "question": "What sinusoidal frequency equations define PE(pos, 2i) = sin(pos / 10000^(2i/d_model)) and PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "04_rag.md#2.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q28",
+        "type": "follow_up",
+        "question": "How are their individual outputs combined before passing through the final projection matrix W_O?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q29",
+        "type": "follow_up",
+        "question": "Why do variants like Leaky ReLU and GELU prevent them from becoming permanently inactive?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q30",
+        "type": "multi_hop",
+        "question": "How does Self-RAG use adaptive routing and relevance grading to guard against hallucinations, and how does backpropagation enable neural model optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0",
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#1.0",
+          "04_rag.md#0.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9197207891481876
+      }
+    ],
+    "+ expand": [
+      {
+        "id": "q01",
+        "type": "factual",
+        "question": "Under what Gauss-Markov assumptions does Ordinary Least Squares produce the Best Linear Unbiased Estimator (BLUE)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q02",
+        "type": "factual",
+        "question": "Why does scaled dot-product self-attention divide the query-key dot products by the square root of key projection dimension d_k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0",
+          "03_transformers.md#2.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q03",
+        "type": "factual",
+        "question": "What is the primary operational advantage of reverse-mode automatic differentiation in backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q04",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients in the cost function keep statistical models from memorizing empirical training noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q05",
+        "type": "vocabulary_gap",
+        "question": "Why do certain threshold transfer units permanently cease updating during deep network optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "02_neural_networks.md#0.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q06",
+        "type": "vocabulary_gap",
+        "question": "How does injecting periodic wave frequencies preserve token ordering information across parallel sequence models?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q07",
+        "type": "exact_term",
+        "question": "What is the analytical normal equation formula w = (X^T X)^(-1) X^T y in OLS?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q08",
+        "type": "exact_term",
+        "question": "What exact variance formula Var(W) = 2 / (n_in + n_out) is used in Xavier Glorot initialization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "03_transformers.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q09",
+        "type": "exact_term",
+        "question": "What formula defines RRF_Score(d) using rank smoothing parameter k in Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q10",
+        "type": "follow_up",
+        "question": "How does it reduce computational complexity compared to naive forward calculations?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q11",
+        "type": "follow_up",
+        "question": "How does it differ from Lasso in setting non-informative feature weights strictly to zero?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q12",
+        "type": "follow_up",
+        "question": "Why do they fail to capture exact lexical keywords and subtle syntactic conditions?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q13",
+        "type": "multi_hop",
+        "question": "How does hybrid retrieval unify bi-encoder dense vectors with sparse inverted indices using Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#3.0",
+          "04_rag.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q14",
+        "type": "multi_hop",
+        "question": "Compare vanishing gradient mitigation via Xavier initialization in deep networks with softmax scale stabilization via sqrt(d_k) in Transformers.",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q15",
+        "type": "multi_hop",
+        "question": "How does ElasticNet combine L1 and L2 penalties, and when is standard OLS without penalties ill-conditioned?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q16",
+        "type": "no_retrieval",
+        "question": "Hello! What kind of questions can you answer about these lecture notes?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#0.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#0.0",
+          "04_rag.md#1.0",
+          "01_regression.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q17",
+        "type": "no_retrieval",
+        "question": "Thank you for explaining that so clearly, I appreciate your help!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#2.0",
+          "02_neural_networks.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q18",
+        "type": "no_retrieval",
+        "question": "Good afternoon! Could you say hi and let me know if you are ready?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q19",
+        "type": "unanswerable",
+        "question": "How does the dual Lagrangian formulation derive the margin boundaries for soft-margin Support Vector Machines (SVM)?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#1.0",
+          "04_rag.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q20",
+        "type": "unanswerable",
+        "question": "What are the quantum gate circuit requirements for executing Shor's prime factorization algorithm?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#2.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q21",
+        "type": "unanswerable",
+        "question": "How does the PageRank random walk model handle dead ends and spider traps in web graphs?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "01_regression.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q22",
+        "type": "factual",
+        "question": "Why does logistic regression use Maximum Likelihood Estimation instead of Ordinary Least Squares for parameter estimation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#0.0",
+          "01_regression.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q23",
+        "type": "factual",
+        "question": "What is the primary motivation for using multiple parallel attention heads in Multi-Head Attention rather than a single head?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q24",
+        "type": "vocabulary_gap",
+        "question": "How do doubled variance adjustments in parameter initialization protect asymmetrical half-wave rectification units from numerical decay?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#2.0",
+          "01_regression.md#2.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q25",
+        "type": "vocabulary_gap",
+        "question": "Why are pairwise cross-attention models computationally prohibitive for scanning full document archives directly?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q26",
+        "type": "exact_term",
+        "question": "What is the binary cross-entropy loss formula L = -[y log(p) + (1-y) log(1-p)] in logistic regression?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "01_regression.md#0.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q27",
+        "type": "exact_term",
+        "question": "What sinusoidal frequency equations define PE(pos, 2i) = sin(pos / 10000^(2i/d_model)) and PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "04_rag.md#2.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q28",
+        "type": "follow_up",
+        "question": "How are their individual outputs combined before passing through the final projection matrix W_O?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q29",
+        "type": "follow_up",
+        "question": "Why do variants like Leaky ReLU and GELU prevent them from becoming permanently inactive?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q30",
+        "type": "multi_hop",
+        "question": "How does Self-RAG use adaptive routing and relevance grading to guard against hallucinations, and how does backpropagation enable neural model optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0",
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#1.0",
+          "04_rag.md#0.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9197207891481876
+      }
+    ],
+    "+ hyde": [
+      {
+        "id": "q01",
+        "type": "factual",
+        "question": "Under what Gauss-Markov assumptions does Ordinary Least Squares produce the Best Linear Unbiased Estimator (BLUE)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q02",
+        "type": "factual",
+        "question": "Why does scaled dot-product self-attention divide the query-key dot products by the square root of key projection dimension d_k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0",
+          "03_transformers.md#2.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q03",
+        "type": "factual",
+        "question": "What is the primary operational advantage of reverse-mode automatic differentiation in backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q04",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients in the cost function keep statistical models from memorizing empirical training noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q05",
+        "type": "vocabulary_gap",
+        "question": "Why do certain threshold transfer units permanently cease updating during deep network optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "02_neural_networks.md#0.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q06",
+        "type": "vocabulary_gap",
+        "question": "How does injecting periodic wave frequencies preserve token ordering information across parallel sequence models?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q07",
+        "type": "exact_term",
+        "question": "What is the analytical normal equation formula w = (X^T X)^(-1) X^T y in OLS?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q08",
+        "type": "exact_term",
+        "question": "What exact variance formula Var(W) = 2 / (n_in + n_out) is used in Xavier Glorot initialization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "03_transformers.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q09",
+        "type": "exact_term",
+        "question": "What formula defines RRF_Score(d) using rank smoothing parameter k in Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q10",
+        "type": "follow_up",
+        "question": "How does it reduce computational complexity compared to naive forward calculations?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q11",
+        "type": "follow_up",
+        "question": "How does it differ from Lasso in setting non-informative feature weights strictly to zero?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q12",
+        "type": "follow_up",
+        "question": "Why do they fail to capture exact lexical keywords and subtle syntactic conditions?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q13",
+        "type": "multi_hop",
+        "question": "How does hybrid retrieval unify bi-encoder dense vectors with sparse inverted indices using Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#3.0",
+          "04_rag.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q14",
+        "type": "multi_hop",
+        "question": "Compare vanishing gradient mitigation via Xavier initialization in deep networks with softmax scale stabilization via sqrt(d_k) in Transformers.",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q15",
+        "type": "multi_hop",
+        "question": "How does ElasticNet combine L1 and L2 penalties, and when is standard OLS without penalties ill-conditioned?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q16",
+        "type": "no_retrieval",
+        "question": "Hello! What kind of questions can you answer about these lecture notes?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#0.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#0.0",
+          "04_rag.md#1.0",
+          "01_regression.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q17",
+        "type": "no_retrieval",
+        "question": "Thank you for explaining that so clearly, I appreciate your help!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#2.0",
+          "02_neural_networks.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q18",
+        "type": "no_retrieval",
+        "question": "Good afternoon! Could you say hi and let me know if you are ready?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q19",
+        "type": "unanswerable",
+        "question": "How does the dual Lagrangian formulation derive the margin boundaries for soft-margin Support Vector Machines (SVM)?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#1.0",
+          "04_rag.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q20",
+        "type": "unanswerable",
+        "question": "What are the quantum gate circuit requirements for executing Shor's prime factorization algorithm?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#2.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q21",
+        "type": "unanswerable",
+        "question": "How does the PageRank random walk model handle dead ends and spider traps in web graphs?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "01_regression.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q22",
+        "type": "factual",
+        "question": "Why does logistic regression use Maximum Likelihood Estimation instead of Ordinary Least Squares for parameter estimation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#0.0",
+          "01_regression.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q23",
+        "type": "factual",
+        "question": "What is the primary motivation for using multiple parallel attention heads in Multi-Head Attention rather than a single head?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q24",
+        "type": "vocabulary_gap",
+        "question": "How do doubled variance adjustments in parameter initialization protect asymmetrical half-wave rectification units from numerical decay?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#2.0",
+          "01_regression.md#2.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q25",
+        "type": "vocabulary_gap",
+        "question": "Why are pairwise cross-attention models computationally prohibitive for scanning full document archives directly?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q26",
+        "type": "exact_term",
+        "question": "What is the binary cross-entropy loss formula L = -[y log(p) + (1-y) log(1-p)] in logistic regression?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "01_regression.md#0.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q27",
+        "type": "exact_term",
+        "question": "What sinusoidal frequency equations define PE(pos, 2i) = sin(pos / 10000^(2i/d_model)) and PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "04_rag.md#2.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q28",
+        "type": "follow_up",
+        "question": "How are their individual outputs combined before passing through the final projection matrix W_O?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q29",
+        "type": "follow_up",
+        "question": "Why do variants like Leaky ReLU and GELU prevent them from becoming permanently inactive?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q30",
+        "type": "multi_hop",
+        "question": "How does Self-RAG use adaptive routing and relevance grading to guard against hallucinations, and how does backpropagation enable neural model optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0",
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#1.0",
+          "04_rag.md#0.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9197207891481876
+      }
+    ],
+    "full_selfrag": [
+      {
+        "id": "q01",
+        "type": "factual",
+        "question": "Under what Gauss-Markov assumptions does Ordinary Least Squares produce the Best Linear Unbiased Estimator (BLUE)?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q02",
+        "type": "factual",
+        "question": "Why does scaled dot-product self-attention divide the query-key dot products by the square root of key projection dimension d_k?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "03_transformers.md#3.0",
+          "03_transformers.md#2.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q03",
+        "type": "factual",
+        "question": "What is the primary operational advantage of reverse-mode automatic differentiation in backpropagation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q04",
+        "type": "vocabulary_gap",
+        "question": "How do penalty coefficients in the cost function keep statistical models from memorizing empirical training noise?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q05",
+        "type": "vocabulary_gap",
+        "question": "Why do certain threshold transfer units permanently cease updating during deep network optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "02_neural_networks.md#0.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q06",
+        "type": "vocabulary_gap",
+        "question": "How does injecting periodic wave frequencies preserve token ordering information across parallel sequence models?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q07",
+        "type": "exact_term",
+        "question": "What is the analytical normal equation formula w = (X^T X)^(-1) X^T y in OLS?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q08",
+        "type": "exact_term",
+        "question": "What exact variance formula Var(W) = 2 / (n_in + n_out) is used in Xavier Glorot initialization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "03_transformers.md#3.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q09",
+        "type": "exact_term",
+        "question": "What formula defines RRF_Score(d) using rank smoothing parameter k in Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q10",
+        "type": "follow_up",
+        "question": "How does it reduce computational complexity compared to naive forward calculations?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#1.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q11",
+        "type": "follow_up",
+        "question": "How does it differ from Lasso in setting non-informative feature weights strictly to zero?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#2.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q12",
+        "type": "follow_up",
+        "question": "Why do they fail to capture exact lexical keywords and subtle syntactic conditions?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q13",
+        "type": "multi_hop",
+        "question": "How does hybrid retrieval unify bi-encoder dense vectors with sparse inverted indices using Reciprocal Rank Fusion?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#3.0",
+          "04_rag.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q14",
+        "type": "multi_hop",
+        "question": "Compare vanishing gradient mitigation via Xavier initialization in deep networks with softmax scale stabilization via sqrt(d_k) in Transformers.",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#0.0",
+          "03_transformers.md#0.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q15",
+        "type": "multi_hop",
+        "question": "How does ElasticNet combine L1 and L2 penalties, and when is standard OLS without penalties ill-conditioned?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#2.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q16",
+        "type": "no_retrieval",
+        "question": "Hello! What kind of questions can you answer about these lecture notes?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#0.0",
+          "01_regression.md#0.0",
+          "02_neural_networks.md#0.0",
+          "04_rag.md#1.0",
+          "01_regression.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q17",
+        "type": "no_retrieval",
+        "question": "Thank you for explaining that so clearly, I appreciate your help!",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "01_regression.md#1.0",
+          "02_neural_networks.md#3.0",
+          "03_transformers.md#2.0",
+          "02_neural_networks.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q18",
+        "type": "no_retrieval",
+        "question": "Good afternoon! Could you say hi and let me know if you are ready?",
+        "needs_retrieval": false,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#2.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#2.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q19",
+        "type": "unanswerable",
+        "question": "How does the dual Lagrangian formulation derive the margin boundaries for soft-margin Support Vector Machines (SVM)?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "03_transformers.md#1.0",
+          "01_regression.md#1.0",
+          "04_rag.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q20",
+        "type": "unanswerable",
+        "question": "What are the quantum gate circuit requirements for executing Shor's prime factorization algorithm?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#2.0",
+          "02_neural_networks.md#3.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q21",
+        "type": "unanswerable",
+        "question": "How does the PageRank random walk model handle dead ends and spider traps in web graphs?",
+        "needs_retrieval": true,
+        "gold_ids": [],
+        "ranked_ids": [
+          "04_rag.md#2.0",
+          "01_regression.md#3.0",
+          "04_rag.md#1.0",
+          "04_rag.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "_skip": true,
+        "is_empty_gold": true
+      },
+      {
+        "id": "q22",
+        "type": "factual",
+        "question": "Why does logistic regression use Maximum Likelihood Estimation instead of Ordinary Least Squares for parameter estimation?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#0.0",
+          "01_regression.md#3.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q23",
+        "type": "factual",
+        "question": "What is the primary motivation for using multiple parallel attention heads in Multi-Head Attention rather than a single head?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#1.0",
+          "04_rag.md#3.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q24",
+        "type": "vocabulary_gap",
+        "question": "How do doubled variance adjustments in parameter initialization protect asymmetrical half-wave rectification units from numerical decay?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#3.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "02_neural_networks.md#2.0",
+          "01_regression.md#2.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q25",
+        "type": "vocabulary_gap",
+        "question": "Why are pairwise cross-attention models computationally prohibitive for scanning full document archives directly?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "04_rag.md#1.0",
+          "03_transformers.md#1.0",
+          "03_transformers.md#0.0",
+          "03_transformers.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q26",
+        "type": "exact_term",
+        "question": "What is the binary cross-entropy loss formula L = -[y log(p) + (1-y) log(1-p)] in logistic regression?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "01_regression.md#2.0"
+        ],
+        "ranked_ids": [
+          "01_regression.md#2.0",
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "01_regression.md#0.0",
+          "04_rag.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q27",
+        "type": "exact_term",
+        "question": "What sinusoidal frequency equations define PE(pos, 2i) = sin(pos / 10000^(2i/d_model)) and PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#3.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#3.0",
+          "01_regression.md#1.0",
+          "01_regression.md#3.0",
+          "04_rag.md#2.0",
+          "03_transformers.md#2.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q28",
+        "type": "follow_up",
+        "question": "How are their individual outputs combined before passing through the final projection matrix W_O?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "03_transformers.md#2.0"
+        ],
+        "ranked_ids": [
+          "03_transformers.md#2.0",
+          "03_transformers.md#1.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#3.0",
+          "01_regression.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q29",
+        "type": "follow_up",
+        "question": "Why do variants like Leaky ReLU and GELU prevent them from becoming permanently inactive?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#2.0"
+        ],
+        "ranked_ids": [
+          "02_neural_networks.md#2.0",
+          "02_neural_networks.md#3.0",
+          "01_regression.md#2.0",
+          "02_neural_networks.md#1.0",
+          "01_regression.md#3.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr": 1.0,
+        "ndcg@5": 1.0
+      },
+      {
+        "id": "q30",
+        "type": "multi_hop",
+        "question": "How does Self-RAG use adaptive routing and relevance grading to guard against hallucinations, and how does backpropagation enable neural model optimization?",
+        "needs_retrieval": true,
+        "gold_ids": [
+          "02_neural_networks.md#1.0",
+          "04_rag.md#3.0"
+        ],
+        "ranked_ids": [
+          "04_rag.md#3.0",
+          "02_neural_networks.md#0.0",
+          "02_neural_networks.md#1.0",
+          "04_rag.md#0.0",
+          "04_rag.md#1.0"
+        ],
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.4,
+        "mrr": 1.0,
+        "ndcg@5": 0.9197207891481876
+      }
+    ]
+  }
+}
